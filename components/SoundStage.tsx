@@ -10,6 +10,20 @@ const noRaycast = () => null;
 const damp1 = THREE.MathUtils.damp;
 const FLOOR_Y = -PANEL_H / 2 - 0.14;
 
+// house-lights DIP: when a screening opens (or switches films) the whole rig ducks for ~300ms,
+// then settles at the focus dim — the projection-booth ritual. One shared envelope, zero React state.
+const stage = { dipT: -10 };
+function FocusDipTracker() {
+  const prev = useRef<number | null>(null);
+  useFrame((s) => {
+    const f = getUI().focus;
+    if (f !== null && f !== prev.current) stage.dipT = s.clock.elapsedTime; // open OR film-switch
+    prev.current = f;
+  });
+  return null;
+}
+const dipping = (t: number) => t - stage.dipT < 0.3;
+
 /** LED softbox face — a dark panel with a grid of bright rounded cells, like the studio lights in the hero. */
 function useLED() {
   return useMemo(() => {
@@ -37,8 +51,9 @@ function Softbox({ position, rotation = [0, 0, 0], w, h, tint, led, phase }: {
   useFrame((s, dt) => {
     const m = face.current; if (!m) return;
     const t = s.clock.elapsedTime;
-    // step the house lights back while a film is focused — the star owns the room
-    dim.current = damp1(dim.current, getUI().focus !== null ? 0.45 : 1, 4, dt);
+    // step the house lights back while a film is focused; DUCK hard for the 300ms changeover
+    const dimTarget = getUI().focus !== null ? (dipping(t) ? 0.12 : 0.45) : 1;
+    dim.current = damp1(dim.current, dimTarget, dipping(t) ? 9 : 4, dt);
     const breath = 0.78 + 0.22 * (0.5 + 0.5 * Math.sin(t * (0.45 + phase * 0.3) + phase * 6.283)) + 0.03 * Math.sin(t * 6.7 + phase * 11.0);
     m.color.copy(base).multiplyScalar(breath * dim.current);
   });
@@ -63,7 +78,9 @@ function Shaft({ lamp, base, height, tint, opacity, phase }: {
   const uniforms = useMemo(() => ({ uTime: { value: 0 }, uColor: { value: new THREE.Color(tint) }, uOpacity: { value: opacity } }), [tint, opacity]);
   useFrame((s, dt) => {
     // write through the LIVE material ref — R3F clones the uniforms prop object (known gotcha)
-    dim.current = damp1(dim.current, getUI().focus !== null ? 0.18 : 1, 4, dt); // shafts recede in focus mode
+    const t0 = s.clock.elapsedTime;
+    const base = getUI().focus !== null ? (dipping(t0) ? 0.06 : 0.18) : 1;
+    dim.current = damp1(dim.current, base, dipping(t0) ? 9 : 4, dt); // shafts duck then recede in focus
     if (mat.current) {
       mat.current.uniforms.uTime.value = s.clock.elapsedTime + phase * 3.0;
       mat.current.uniforms.uOpacity.value = opacity * dim.current;
@@ -186,6 +203,7 @@ export default function SoundStage({ tier }: { tier: string }) {
 
   return (
     <group>
+      <FocusDipTracker />
       {/* the set: circular dolly track under the reel, light trees, foreground tripods */}
       <DollyTrack />
       <LightTrees />

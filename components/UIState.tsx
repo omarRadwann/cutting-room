@@ -19,10 +19,10 @@ export default function UIState() {
       hero += (target - hero) * 0.16;
       root.style.setProperty("--hero-op", hero.toFixed(3));
       // scene recedes as the "how we work" section + colophon arrive, so the DOM reads clean
-      const sceneOp = focused ? 1 : clamp(1 - (p - 0.58) / 0.09, 0.34, 1); // room stays a glowing backdrop, never a void
+      const sceneOp = focused ? 1 : clamp(1 - (p - 0.53) / 0.09, 0.34, 1); // room stays a glowing backdrop, never a void
       root.style.setProperty("--scene-op", sceneOp.toFixed(3));
       root.style.setProperty("--prog", p.toFixed(4)); // the gold scroll hairline
-      const phase = focused ? "focus" : p < 0.05 ? "intro" : p > 0.58 ? "outro" : "browse";
+      const phase = focused ? "focus" : p < 0.05 ? "intro" : p > 0.53 ? "outro" : "browse";
       if (root.dataset.phase !== phase) { root.dataset.phase = phase; setIntro(phase === "intro"); }
       raf = requestAnimationFrame(loop);
     };

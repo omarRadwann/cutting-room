@@ -56,5 +56,5 @@ export const DRUM = {
   // browse distance frames the widest film + shows the neighbours (nominal 1.5 viewport aspect)
   browseDist: focusDistFor(maxW, PANEL_H, 38, 1.5) * 1.7,
   browseFrom: 0.05,
-  browseTo: 0.55, // browsing completes BEFORE the "How we work" heading scrolls in (no text-over-film collision)
+  browseTo: 0.5, // browsing completes BEFORE the "How we work" heading scrolls in (live-verified: 0.55 still grazed at p0.52)
 };

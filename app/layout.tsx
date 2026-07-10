@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter, Amiri, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Outfit, Amiri, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
@@ -8,7 +8,8 @@ import Announcer from "@/components/Announcer";
 // Fraunces variable — request the optical-size, SOFT & WONK axes so the display face can run a true
 // high-contrast 144pt cut on the hero and a calmer text cut on smaller headings (font-variation-settings).
 const display = Fraunces({ subsets: ["latin"], style: ["normal", "italic"], axes: ["opsz", "SOFT", "WONK"], variable: "--font-display", display: "swap" });
-const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+// Outfit replaces Inter (banned across the premium-design skills) — geometric warmth that suits the room
+const body = Outfit({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const arabic = Amiri({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-ar", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 

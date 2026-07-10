@@ -20,6 +20,139 @@ const damp = THREE.MathUtils.damp;
 const TWO_PI = Math.PI * 2;
 const wrap = (a: number) => (((a % TWO_PI) + TWO_PI + Math.PI) % TWO_PI) - Math.PI; // → [-π, π]
 
+/** Painted stage markings — circle guides under the reel, tape crosses at the fixture feet, and the
+ *  arced production stencil. One 2048 canvas, one decal plane, all tiers (module-cached). */
+let _markTex: THREE.CanvasTexture | null = null;
+function markingsTex(): THREE.CanvasTexture | null {
+  if (typeof document === "undefined") return null;
+  if (_markTex) return _markTex;
+  const SIZE = 2048, WORLD = RADIUS * 2.6, s = SIZE / WORLD, C = SIZE / 2;
+  const c = document.createElement("canvas"); c.width = c.height = SIZE;
+  const ctx = c.getContext("2d")!;
+  const px = (wx: number, wz: number) => [C + wx * s, C + wz * s] as const;
+  // dashed circle guides either side of the dolly track
+  ctx.strokeStyle = "rgba(232,225,210,0.34)"; ctx.lineWidth = 3; ctx.setLineDash([26, 30]);
+  for (const r of [RADIUS - 0.62, RADIUS + 0.62]) { ctx.beginPath(); ctx.arc(C, C, r * s, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.setLineDash([]);
+  // gold tape crosses at the light-tree + tripod feet
+  ctx.strokeStyle = "rgba(216,162,74,0.5)"; ctx.lineWidth = 5;
+  const cross = (wx: number, wz: number) => { const [x, y] = px(wx, wz); const a = 0.16 * s; ctx.beginPath(); ctx.moveTo(x - a, y); ctx.lineTo(x + a, y); ctx.moveTo(x, y - a); ctx.lineTo(x, y + a); ctx.stroke(); };
+  for (const x of [-3.4, -1.15, 1.15, 3.4]) cross(x, -RADIUS * 0.5 - 0.14);
+  cross(-6.4, RADIUS * 0.55); cross(6.6, RADIUS * 0.62);
+  // the production stencil, arced along the front guide
+  ctx.fillStyle = "rgba(232,225,210,0.4)"; ctx.font = '600 46px "JetBrains Mono", monospace';
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const label = "STAGE 01 · THE CUTTING ROOM";
+  const rText = (RADIUS + 1.35) * s, arc = 0.62; // radians of total sweep, centred at the front
+  for (let i = 0; i < label.length; i++) {
+    const t = i / (label.length - 1) - 0.5, a = t * arc; // 0 at front centre
+    ctx.save();
+    ctx.translate(C + Math.sin(a) * rText, C + Math.cos(a) * rText);
+    ctx.rotate(-a); // upright to a viewer standing in front
+    ctx.fillText(label[i], 0, 0);
+    ctx.restore();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  _markTex = t; return t;
+}
+
+function StageMarkings() {
+  const tex = useMemo(() => markingsTex(), []);
+  if (!tex) return null;
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y + 0.008, 0]} renderOrder={2} raycast={() => null}>
+      <planeGeometry args={[RADIUS * 2.6, RADIUS * 2.6]} />
+      <meshBasicMaterial map={tex} transparent opacity={0.85} depthWrite={false} />
+    </mesh>
+  );
+}
+
+/** ground haze — a warm luminous band hugging the floor behind the reel (peak kept under the bloom threshold) */
+function GroundHaze() {
+  const tex = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas"); c.width = 4; c.height = 128;
+    const ctx = c.getContext("2d")!;
+    const g = ctx.createLinearGradient(0, 128, 0, 0);
+    g.addColorStop(0, "rgba(255,226,184,0.32)"); g.addColorStop(0.55, "rgba(255,226,184,0.1)"); g.addColorStop(1, "rgba(255,226,184,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 128);
+    return new THREE.CanvasTexture(c);
+  }, []);
+  if (!tex) return null;
+  return (
+    <mesh position={[0, FLOOR_Y + 0.7, -2.0]} raycast={() => null}>
+      <planeGeometry args={[RADIUS * 2.6, 1.5]} />
+      <meshBasicMaterial map={tex} transparent blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} fog={false} />
+    </mesh>
+  );
+}
+
+/** warm glow bleeding through the back service door (fog-immune — the shell's door frame holds it) */
+function DoorGlow() {
+  const tex = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas"); c.width = 64; c.height = 128;
+    const ctx = c.getContext("2d")!;
+    const g = ctx.createRadialGradient(32, 100, 4, 32, 80, 96);
+    g.addColorStop(0, "rgba(255,214,160,0.5)"); g.addColorStop(0.55, "rgba(255,200,140,0.16)"); g.addColorStop(1, "rgba(255,200,140,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 128);
+    return new THREE.CanvasTexture(c);
+  }, []);
+  if (!tex) return null;
+  return (
+    <mesh position={[0, FLOOR_Y + 1.3, -10.35]} raycast={() => null}>
+      <planeGeometry args={[1.5, 2.7]} />
+      <meshBasicMaterial map={tex} transparent blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} fog={false} />
+    </mesh>
+  );
+}
+
+/** the monumental painted "01" beside the door — deep-stage signage (fog-immune, one plane) */
+function StageSign() {
+  const tex = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas"); c.width = 256; c.height = 256;
+    const ctx = c.getContext("2d")!;
+    ctx.fillStyle = "rgba(220,233,255,0.85)";
+    ctx.font = '300 190px Georgia, "Times New Roman", serif';
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("01", 128, 140);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }, []);
+  if (!tex) return null;
+  return (
+    <mesh position={[3.6, FLOOR_Y + 2.5, -10.3]} raycast={() => null}>
+      <planeGeometry args={[2.4, 2.4]} />
+      <meshBasicMaterial map={tex} transparent opacity={0.16} depthWrite={false} toneMapped={false} fog={false} />
+    </mesh>
+  );
+}
+
+/** polished-concrete roughness variation — dark streaks = sharper reflection lanes (data map, linear) */
+let _roughTex: THREE.CanvasTexture | null = null;
+function roughnessTex(): THREE.CanvasTexture | null {
+  if (typeof document === "undefined") return null;
+  if (_roughTex) return _roughTex;
+  const c = document.createElement("canvas"); c.width = c.height = 512;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#e6e6e6"; ctx.fillRect(0, 0, 512, 512); // base ~0.9 roughness
+  for (let i = 0; i < 46; i++) { // long polished wear streaks
+    const y = Math.random() * 512, w = 30 + Math.random() * 150, h = 4 + Math.random() * 16;
+    const v = 120 + Math.floor(Math.random() * 70); // 0.47–0.75 → locally glossier
+    ctx.fillStyle = `rgba(${v},${v},${v},${0.25 + Math.random() * 0.3})`;
+    ctx.beginPath(); ctx.ellipse(Math.random() * 512, y, w, h, Math.random() * 0.4 - 0.2, 0, Math.PI * 2); ctx.fill();
+  }
+  for (let i = 0; i < 900; i++) { // speckle
+    const v = 150 + Math.floor(Math.random() * 90);
+    ctx.fillStyle = `rgba(${v},${v},${v},0.35)`;
+    ctx.fillRect(Math.random() * 512, Math.random() * 512, 1.6, 1.6);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.NoColorSpace; // DATA map — sRGB decode would wreck the response
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(10, 10); t.anisotropy = 4;
+  _roughTex = t; return t;
+}
+
 function useRadial() {
   return useMemo(() => {
     const c = document.createElement("canvas"); c.width = c.height = 128;
@@ -95,10 +228,11 @@ function Floor({ tier }: { tier: string }) {
     );
   }
   const hi = tier === "high";
+  const rough = roughnessTex();
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y, RADIUS * 0.1]} receiveShadow>
       <planeGeometry args={[120, 120]} />
-      <MeshReflectorMaterial blur={hi ? [320, 120] : [320, 110]} resolution={hi ? 1024 : 192} mixBlur={1} mixStrength={hi ? 1.4 : 0.95} roughness={hi ? 0.75 : 0.88} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
+      <MeshReflectorMaterial blur={hi ? [320, 120] : [320, 110]} resolution={hi ? 1024 : 192} mixBlur={1} mixStrength={hi ? 1.4 : 0.95} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
     </mesh>
   );
 }
@@ -192,6 +326,10 @@ export default function Room() {
       <StageShell />
       <SoundStage tier={q.tier} />
       <Floor tier={q.tier} />
+      <StageMarkings />
+      <GroundHaze />
+      <DoorGlow />
+      <StageSign />
       <StageLight radial={radial} />
       {q.tier !== "safe" && <Dust count={q.tier === "high" ? 700 : 340} radial={radial} />}
     </group>

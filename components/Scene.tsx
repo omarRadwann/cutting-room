@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, type ReactElement } from "react";
+import { Suspense, useEffect, useMemo, useRef, type ReactElement } from "react";
 import * as THREE from "three";
 import { PerformanceMonitor, Preload, Environment, Lightformer } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, SMAA, N8AO, DepthOfField, ChromaticAberration, Noise, HueSaturation } from "@react-three/postprocessing";
@@ -48,6 +48,41 @@ function FrameGate() {
     return () => { cancelAnimationFrame(raf); setFrameloop("always"); };
   }, [setFrameloop]);
   return null;
+}
+
+/** Gobo key — a film-gate slat cookie projected across the stage (no shadow pass; the cookie is the
+ *  cinema). Mounted from frame one so PreWarm compiles the spot-map shader behind the preloader. */
+let _goboTex: THREE.CanvasTexture | null = null;
+function goboTex(): THREE.CanvasTexture | null {
+  if (typeof document === "undefined") return null;
+  if (_goboTex) return _goboTex;
+  const c = document.createElement("canvas"); c.width = c.height = 512;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 5; i++) { // five soft gate slats
+    const x = 40 + i * 96, w = 58;
+    const g = ctx.createLinearGradient(x, 0, x + w, 0);
+    g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(0.28, "rgba(255,255,255,0.95)");
+    g.addColorStop(0.72, "rgba(255,255,255,0.95)"); g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g; ctx.fillRect(x, 0, w, 512);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  _goboTex = t; return t;
+}
+
+function GoboKey() {
+  const tex = useMemo(() => goboTex(), []);
+  const light = useRef<THREE.SpotLight>(null);
+  const target = useMemo(() => new THREE.Object3D(), []);
+  useEffect(() => { if (light.current) light.current.target = target; }, [target]);
+  if (!tex) return null;
+  return (
+    <>
+      <spotLight ref={light} position={[-7.5, 8, DRUM.radius + 5]} angle={0.52} penumbra={0.65} decay={1.2}
+        intensity={55} color="#ffe2b8" map={tex} castShadow={false} />
+      <primitive object={target} position={[2.2, -1.4, DRUM.radius - 1.2]} />
+    </>
+  );
 }
 
 /** Compile all materials + upload assets up-front so the first time a later scene appears there's no
@@ -131,6 +166,8 @@ export default function Scene() {
       />
       {/* fill — cool bounce from camera-left, softens the key's shadow side */}
       <pointLight position={[-6, 2.5, DRUM.radius + 2]} intensity={7} color="#6f9fc4" distance={34} />
+      {/* gobo rake — dappled film-gate light across floor + frames (profile-gated per plan) */}
+      {q.tier !== "safe" && <GoboKey />}
       {/* back-rim — grazes the metallic frames from behind-left so they separate from the cove (rim only, no shadow) */}
       <directionalLight position={[-5, 7, -DRUM.radius * 0.5]} intensity={q.tier === "safe" ? 0.55 : 1.15} color="#a6c8e6" />
       {/* studio env — softbox reflections on the panel frames + floor (Lightformer rig, no external HDRI) */}

@@ -7,12 +7,36 @@ import { withBase } from "@/lib/withBase";
 import { postersOnly } from "@/lib/force";
 import { scroll } from "@/lib/scroll-store";
 import { prefersReducedMotion } from "@/lib/reduced-motion";
+import { pointerNorm } from "@/lib/drum-state";
+import { focusVideo } from "@/lib/focus-video";
 import { RADIUS, PANEL_H } from "@/lib/drum-config";
 import type { Clip } from "@/lib/content";
 
 const damp = THREE.MathUtils.damp;
 const clamp = THREE.MathUtils.clamp;
 const FLOOR_Y = -PANEL_H / 2 - 0.14;
+
+// aspect-keyed velvet-mat textures with a thin GOLD inner rule — the jewelry line around every print.
+// Uniform world thickness via per-axis pixel widths; only two aspect families exist (16:9, 9:16).
+const _matTex = new Map<string, THREE.CanvasTexture>();
+function matTex(w: number, h: number): THREE.CanvasTexture | null {
+  if (typeof document === "undefined") return null;
+  const key = w > h ? "w" : "t";
+  const hit = _matTex.get(key); if (hit) return hit;
+  const CW = 512, CH = Math.round((512 * (h + 0.08)) / (w + 0.08));
+  const c = document.createElement("canvas"); c.width = CW; c.height = CH;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#131017"; ctx.fillRect(0, 0, CW, CH); // the velvet
+  const inX = (0.026 / (w + 0.08)) * CW, inY = (0.026 / (h + 0.08)) * CH;   // rule inset from mat edge
+  const txX = Math.max(1.4, (0.007 / (w + 0.08)) * CW), txY = Math.max(1.4, (0.007 / (h + 0.08)) * CH);
+  ctx.fillStyle = "#b98b3f"; // burnished gold, matte (env does the glinting)
+  ctx.fillRect(inX, inY, CW - inX * 2, txY);
+  ctx.fillRect(inX, CH - inY - txY, CW - inX * 2, txY);
+  ctx.fillRect(inX, inY, txX, CH - inY * 2);
+  ctx.fillRect(CW - inX - txX, inY, txX, CH - inY * 2);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  _matTex.set(key, t); return t;
+}
 
 // one shared soft radial (dark centre → transparent) for every panel's floor contact-shadow
 let _shadowTex: THREE.CanvasTexture | null = null;
@@ -30,7 +54,7 @@ function shadowTex(): THREE.CanvasTexture | null {
 /** Video layer — mounted while a panel is active. `playing=false` = PRE-BUFFER mode: the element loads
  *  and uploads its first frame but stays PAUSED (no decode stream), so the hero beat pays nothing and the
  *  first scroll into the reel starts the film instantly. */
-function ActiveVideo({ src, unmuted, playing, w, h }: { src: string; unmuted: boolean; playing: boolean; w: number; h: number }) {
+function ActiveVideo({ src, unmuted, playing, expose, w, h }: { src: string; unmuted: boolean; playing: boolean; expose: boolean; w: number; h: number }) {
   const tex = useVideoTexture(src, { muted: true, loop: true, start: false, crossOrigin: "anonymous", playsInline: true, preload: "auto" });
   tex.colorSpace = THREE.SRGBColorSpace;
   const mat = useRef<THREE.MeshStandardMaterial>(null);
@@ -41,6 +65,11 @@ function ActiveVideo({ src, unmuted, playing, w, h }: { src: string; unmuted: bo
     if (playing) v.play?.().catch(() => {});
     else v.pause?.();
   }, [v, playing, unmuted]);
+  useEffect(() => {
+    if (!v || !expose) return;
+    focusVideo.el = v; // the overlay's timecode scrubline reads this
+    return () => { if (focusVideo.el === v) focusVideo.el = null; };
+  }, [v, expose]);
   useFrame((_, dt) => { if (mat.current) mat.current.opacity = damp(mat.current.opacity, playing ? 1 : 0, 7, dt); });
   return (
     // a LIT screen: the video drives both albedo (so it catches the room's soft specular) AND emissive
@@ -70,6 +99,8 @@ export default function VideoPanel({
   const reduce = useMemo(() => prefersReducedMotion(), []);
   const prevActive = useRef(false);
   const ignite = useRef(0);
+  const tiltX = useRef(0);
+  const tiltY = useRef(0);
   const w = width, h = height;
 
   useFrame((_, dt) => {
@@ -86,7 +117,12 @@ export default function VideoPanel({
       const birth = reduce ? 1 : clamp((scroll.progress - 0.018 - index * 0.006) / 0.05, 0, 1);
       const eb = 1 - Math.pow(1 - birth, 3);
       grp.current.position.y = (eb - 1) * 0.95;
-      grp.current.rotation.x = (1 - eb) * -0.14;
+      // the featured film subtly faces the visitor (≤1.3°; pointerNorm stays 0 on touch/reduced-motion)
+      const tilt = active && !focused ? 1 : 0;
+      tiltX.current = damp(tiltX.current, tilt * pointerNorm.y * 0.016, 4, dt);
+      tiltY.current = damp(tiltY.current, tilt * pointerNorm.x * 0.022, 4, dt);
+      grp.current.rotation.x = (1 - eb) * -0.14 + tiltX.current;
+      grp.current.rotation.y = angle + tiltY.current;
     }
     if (posterMat.current) {
       // dim non-featured films via self-glow; the changeover flash rides on top and decays
@@ -113,10 +149,10 @@ export default function VideoPanel({
         <boxGeometry args={[w + 0.17, h + 0.17, 0.15]} />
         <meshStandardMaterial color="#17171d" roughness={0.28} metalness={0.9} envMapIntensity={1.3} />
       </mesh>
-      {/* velvet mat — the passe-partout between frame and print (museum matting; sheen = the fabric cue) */}
+      {/* velvet mat — the passe-partout between frame and print, with a thin burnished-gold inner rule */}
       <mesh position={[0, 0, 0.002]} raycast={() => null}>
         <planeGeometry args={[w + 0.08, h + 0.08]} />
-        <meshPhysicalMaterial color="#131017" roughness={0.95} metalness={0} sheen={1} sheenColor="#3a2f4f" sheenRoughness={0.5} />
+        <meshPhysicalMaterial map={matTex(w, h) ?? undefined} color="#ffffff" roughness={0.92} metalness={0.15} sheen={1} sheenColor="#3a2f4f" sheenRoughness={0.5} envMapIntensity={1.1} />
       </mesh>
       {/* museum placard — engraved plate under the piece: "01 — THE COAST" */}
       <group position={[0, -h / 2 - 0.19, 0.05]}>
@@ -142,7 +178,7 @@ export default function VideoPanel({
           decode competition during the hero beat, instant start on the first scroll */}
       {active && !postersOnly() && (
         <Suspense fallback={null}>
-          <ActiveVideo src={withBase(clip.src)} unmuted={unmuted} playing={!intro} w={w} h={h} />
+          <ActiveVideo src={withBase(clip.src)} unmuted={unmuted} playing={!intro} expose={focused} w={w} h={h} />
         </Suspense>
       )}
       {/* fresnel glass cover — reflects the softbox rig so each film reads as a framed piece behind glass;

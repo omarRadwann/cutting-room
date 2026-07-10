@@ -99,10 +99,12 @@ html { scrollbar-width: thin; scrollbar-color: rgba(216,162,74,0.35) #0a0a10; }
 
 /* Custom cursor: fast dot + trailing ring with states (components/CustomCursor.tsx) */
 .cur-dot { position: fixed; top: 0; left: 0; z-index: 95; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--text); pointer-events: none; mix-blend-mode: difference; will-change: transform; transition: opacity .3s; }
+  background: var(--text); pointer-events: none; mix-blend-mode: difference; will-change: transform; transition: opacity .3s; opacity: 0; }
 .cur-ring { position: fixed; top: 0; left: 0; z-index: 94; width: 34px; height: 34px; border-radius: 50%;
   border: 1px solid var(--muted); pointer-events: none; display: grid; place-items: center; will-change: transform;
-  transition: width .35s var(--ease-out), height .35s var(--ease-out), border-color .35s, background-color .35s; }
+  transition: width .35s var(--ease-out), height .35s var(--ease-out), border-color .35s, background-color .35s, opacity .3s; opacity: 0; }
+/* the cursor exists only once the pointer has actually moved — never a dot parked at (0,0) */
+html.cur-on .cur-dot, html.cur-on .cur-ring { opacity: 1; }
 .cur-label { font-family: var(--font-body); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text); opacity: 0; transition: opacity .3s; white-space: nowrap; }
 html[data-cursor="ui"] .cur-ring { width: 54px; height: 54px; border-color: var(--accent); }
 html[data-cursor="view"] .cur-ring { width: 80px; height: 80px; border-color: var(--accent); background-color: rgba(216,162,74,0.12); }
@@ -289,7 +291,8 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
 .film-index { position: fixed; right: clamp(1rem, 2.5vw, 2.2rem); top: 50%; transform: translateY(-50%); z-index: 6;
   display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity .5s var(--ease-out); }
 html[data-phase="browse"] .film-index { opacity: 1; pointer-events: auto; }
-.fi-item { display: flex; align-items: baseline; gap: 0.7rem; background: none; border: 0; color: var(--muted); font-family: var(--font-body); cursor: pointer; padding: 0.16rem 0; text-align: right; transition: color .3s var(--ease-out), transform .3s var(--ease-out); text-shadow: 0 1px 10px rgba(4,4,7,0.9); }
+.fi-item { display: flex; align-items: baseline; gap: 0.7rem; background: none; border: 0; color: var(--muted); font-family: var(--font-body); cursor: pointer; padding: 0.16rem 0; text-align: right; transition: color .22s var(--ease-out), transform .22s var(--ease-out); text-shadow: 0 1px 10px rgba(4,4,7,0.9); }
+.fi-item:active { transform: translateX(-5px) scale(0.97); transition-duration: .12s; }
 .fi-n { font-size: var(--t-2xs); opacity: 0.5; letter-spacing: 0.06em; }
 .fi-t { font-size: var(--t-sm); letter-spacing: 0.01em; position: relative; }
 .fi-item:hover { color: var(--text); transform: translateX(-5px); }
@@ -318,20 +321,34 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .focus-cap { position: absolute; left: clamp(1.2rem, 5vw, 4rem); bottom: clamp(1.6rem, 5vw, 3.4rem); right: clamp(1.2rem, 5vw, 4rem); max-width: 44ch;
   transform: translateY(18px); transition: transform 0.6s var(--ease-out); }
 .focus[data-open="1"] .focus-cap { transform: none; }
-/* the caption CASCADES in — eyebrow, title, brief, tools arrive as beats, not a block */
-.focus-cap > * { opacity: 0; transform: translateY(14px); transition: opacity .55s var(--ease-out), transform .55s var(--ease-out); }
-.focus[data-open="1"] .focus-cap > * { opacity: 1; transform: none; }
-.focus[data-open="1"] .focus-cap > *:nth-child(2) { transition-delay: .09s; }
-.focus[data-open="1"] .focus-cap > *:nth-child(3) { transition-delay: .18s; }
-.focus[data-open="1"] .focus-cap > *:nth-child(4) { transition-delay: .27s; }
+/* the caption CASCADES in — eyebrow, title, brief, tools, timecode arrive as beats. Animation (not
+   transition) so the re-keyed caption REPLAYS when you switch films inside focus. */
+.focus:not([data-open="1"]) .focus-cap > * { opacity: 0; }
+.focus[data-open="1"] .focus-cap > * { opacity: 1; animation: cap-in .5s var(--ease-out) both; }
+.focus[data-open="1"] .focus-cap > *:nth-child(2) { animation-delay: .09s; }
+.focus[data-open="1"] .focus-cap > *:nth-child(3) { animation-delay: .18s; }
+.focus[data-open="1"] .focus-cap > *:nth-child(4) { animation-delay: .27s; }
+.focus[data-open="1"] .focus-cap > *:nth-child(5) { animation-delay: .36s; }
+@keyframes cap-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* the projection-booth blink between films (re-keyed → replays) */
+.focus-blink { position: absolute; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none;
+  animation: blink-dip 0.16s ease-out both; }
+@keyframes blink-dip { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 0; } }
+
+/* timecode scrubline — the cutting room's clock under the caption */
+.focus-tc { display: flex; align-items: center; gap: 0.9rem; margin-top: 1rem; font-size: var(--t-2xs); letter-spacing: 0.18em; color: var(--accent); }
+.focus-tc-bar { position: relative; width: clamp(90px, 12vw, 150px); height: 2px; background: rgba(242,237,227,0.16); overflow: hidden; }
+.focus-tc-bar i { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform 0.25s linear; }
 .focus-eyebrow { color: var(--accent); letter-spacing: var(--track-label); text-transform: uppercase; font-weight: 500; font-size: var(--t-xs); margin-bottom: 0.7rem; }
 .focus-title { font-family: var(--font-display); font-variation-settings: "opsz" 120; font-size: var(--t-2xl); line-height: 0.96; letter-spacing: var(--track-display); }
 .focus-brief { color: var(--text); opacity: 0.85; margin-top: 0.9rem; font-size: var(--t-md); line-height: 1.55; max-width: 40ch; }
 .focus-tools { font-family: var(--font-mono); color: var(--muted); font-size: var(--t-xs); letter-spacing: 0.03em; margin-top: 1.1rem; }
 .focus-close { position: absolute; top: clamp(4.2rem, 8vw, 5rem); right: clamp(1.2rem, 4vw, 2.4rem); pointer-events: auto; }
 .focus-arrows { position: absolute; bottom: clamp(1.8rem, 5vw, 3.6rem); right: clamp(1.2rem, 5vw, 4rem); display: flex; gap: 0.6rem; pointer-events: auto; }
-.focus-arrows button { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: rgba(16,16,24,0.4); color: var(--text); font-size: 1rem; cursor: pointer; transition: border-color .3s, background .3s; }
+.focus-arrows button { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: rgba(16,16,24,0.4); color: var(--text); font-size: 1rem; cursor: pointer; transition: border-color .25s, background .25s, transform .15s var(--ease-out); }
 .focus-arrows button:hover { border-color: var(--accent); background: rgba(16,16,24,0.7); }
+.focus-arrows button:active { transform: scale(0.96); }
 .focus-cap .focus-close, .focus-cap { pointer-events: auto; }
 
 /* COLOPHON */
@@ -340,6 +357,10 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
   background: linear-gradient(180deg, transparent 0%, rgba(7,7,11,0.55) 12%, var(--base) 34%); }
 .colo-statement { font-family: var(--font-display); font-variation-settings: "opsz" 96; font-size: var(--t-2xl); line-height: 1.06; letter-spacing: var(--track-display); max-width: 20ch; }
 .colo-statement em { font-style: italic; font-weight: 300; color: var(--accent); }
+/* the statement rises line by line from behind masks (not the generic fade) */
+.colo-statement[data-reveal] { opacity: 1; transform: none; }
+.colo-statement .kin-piece { transform: translateY(118%); }
+.colo-statement.in .kin-piece { animation: kin-rise 0.95s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 0.09s); }
 .colo-row { display: flex; flex-wrap: wrap; gap: clamp(1.4rem, 4vw, 3rem); align-items: flex-end; justify-content: space-between; }
 .colo-lead { color: var(--muted); max-width: 40ch; line-height: 1.6; }
 .colo-cta { display: inline-block; font-family: var(--font-display); font-style: italic; font-variation-settings: "opsz" 40; font-size: var(--t-xl); border-bottom: 1px solid var(--line); padding-bottom: 0.2rem; transition: border-color .4s, color .4s, transform .45s var(--ease-out); }
@@ -396,6 +417,10 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
   font-family: var(--font-mono); font-size: var(--t-2xs); letter-spacing: 0.07em; color: var(--muted);
   transition: color .3s, border-color .3s; }
 .tl-card:hover .chip { color: var(--text); border-color: rgba(242,237,227,0.28); }
+/* chips cascade in 40ms apart once their card lands (opacity stays explicit for reduced-motion) */
+.tl-step:not(.in) .chip { opacity: 0; }
+.tl-step.in .chip { opacity: 1; animation: chip-in 0.34s var(--ease-out) both; animation-delay: calc(0.32s + var(--i, 0) * 40ms); }
+@keyframes chip-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 /* the gallery corridor — a printed film frame hangs opposite each card, filling the dead half with the work */
 .tl-still { display: none; position: relative; width: clamp(190px, 21vw, 280px); margin: 0; align-self: center;
   padding: 0.55rem 1.05rem; background: #0c0e14; border: 1px solid var(--line); border-radius: 2px;

@@ -6,3 +6,7 @@ export const drumState = {
   rot: 0,            // the drum group's live rotation.y
   frontAngle: 0,     // world angle of the featured (front-most) film, ≈0 at dead-centre
 };
+
+// normalised pointer (−1..1, y down) — written by CustomCursor (fine pointers only, so it stays 0 on
+// touch/reduced-motion), read by the featured panel's subtle face-the-visitor tilt.
+export const pointerNorm = { x: 0, y: 0 };

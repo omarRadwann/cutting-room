@@ -15,6 +15,13 @@ const STEPS = [
   { n: "08", tc: "00:15", phase: "Delivery",        t: "Delivery",               d: "Masters and every cut-down the channels need — ratios, durations, captions — QC'd, wrapped and shipped.",                   tools: ["Media Encoder", "DaVinci"] },
 ];
 
+// Corridor hang order (indexes into STILLS): paired to each stage's MEANING and paced by measured
+// luminance (L60–L168) so darks sit mid-corridor and it exits on the warm gold "delivered gift".
+// 01 Brief→crystal(keyframe) 02 Concept→luxor(the show) 03 Previs→diamond(placing the stone)
+// 04 Look-dev→tote(product portrait) 05 Animation→desert(the walk) 06 Lighting→temple(god-rays)
+// 07 Grade→qurashi(the graded flacon) 08 Delivery→bouquet(the gift)
+const CORRIDOR_ORDER = [7, 0, 1, 5, 2, 4, 3, 6];
+
 /** The studio pipeline as an edit-bay timeline: a centre spine that lights up cut by cut, timecode
  *  markers, phase tags, ghost numerals — and it RESOLVES to a delivered master (never a dead end). */
 export default function WorkProcess() {
@@ -33,7 +40,7 @@ export default function WorkProcess() {
 
       <ol className="tl">
         {STEPS.map((s, i) => {
-          const still = STILLS[i]; // 8 stills, 8 steps — every stage hangs a frame from the actual work
+          const still = STILLS[CORRIDOR_ORDER[i]]; // every stage hangs a MEANING-matched frame from the work
           return (
             <li className="tl-step" key={s.n} data-reveal style={{ transitionDelay: `${(i % 2) * 0.06}s` }}>
               <div className="tl-rail" aria-hidden="true"><span className="tl-dot" /></div>
@@ -46,7 +53,7 @@ export default function WorkProcess() {
                 <h3 className="tl-title">{s.t}</h3>
                 <p className="tl-d">{s.d}</p>
                 <div className="tl-chips">
-                  {s.tools.map((t) => <span className="chip" key={t}>{t}</span>)}
+                  {s.tools.map((t, j) => <span className="chip" key={t} style={{ ["--i" as string]: j } as React.CSSProperties}>{t}</span>)}
                 </div>
               </article>
               {still && (

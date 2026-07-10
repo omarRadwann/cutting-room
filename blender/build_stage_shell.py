@@ -47,6 +47,27 @@ FLAT_H = 7.0
 box("flatL", 0.14, 13.0, FLAT_H, -10.5, 3.4, FLOOR + FLAT_H / 2, rz=math.radians(-7))
 box("flatR", 0.14, 13.0, FLAT_H, 10.5, 3.4, FLOOR + FLAT_H / 2, rz=math.radians(7))
 
+# ---- v2: catwalk handrails on the 3 nearest ceiling beams (three.z rows +2.5 / 0 / -2.5) ----------
+for j, by in enumerate([-2.5, 0.0, 2.5]):
+    box(f"rail{j}", 19.0, 0.05, 0.05, 0.0, by, CEIL + 0.62)
+    for k, bx in enumerate([-9.0, -6.0, -3.0, 0.0, 3.0, 6.0, 9.0]):
+        box(f"railpost{j}_{k}", 0.045, 0.045, 0.5, bx, by, CEIL + 0.36)
+
+# ---- v2: cable drops from the ceiling to each overhead lamp (lamps: three z = RADIUS*0.18 -> b.y=-1.35)
+for j, bx in enumerate([-4.2, -1.4, 1.4, 4.2]):
+    box(f"cable{j}", 0.03, 0.03, CEIL - 3.55, bx, -1.35, (CEIL + 3.55) / 2)
+
+# ---- v2: sandbag clusters at the light-tree bases (trees: three z = -R*0.5-0.14 -> b.y ~= +3.9) ----
+for j, bx in enumerate([-3.4, -1.15, 1.15, 3.4]):
+    box(f"sbagA{j}", 0.5, 0.34, 0.17, bx + 0.26, 3.9, FLOOR + 0.085)
+    box(f"sbagB{j}", 0.46, 0.3, 0.16, bx - 0.2, 4.05, FLOOR + 0.08)
+    box(f"sbagC{j}", 0.42, 0.3, 0.15, bx + 0.05, 3.96, FLOOR + 0.24)
+
+# ---- v2: service-door frame on the back baffle wall (glow plane is added in Room.tsx) --------------
+box("doorJambL", 0.16, 0.3, 2.7, -0.85, 10.55, FLOOR + 1.35)
+box("doorJambR", 0.16, 0.3, 2.7, 0.85, 10.55, FLOOR + 1.35)
+box("doorHead", 1.86, 0.3, 0.16, 0.0, 10.55, FLOOR + 2.78)
+
 # ---- apply transforms, join to ONE mesh ------------------------------------------------------------
 bpy.ops.object.select_all(action="DESELECT")
 for o in parts:

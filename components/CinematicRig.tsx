@@ -55,9 +55,10 @@ export default function CinematicRig() {
     look.current.z = damp(look.current.z, lookTarget.z, k, dt);
     cam.lookAt(look.current);
 
-    // FOV breath — the dolly-zoom compression of stepping into a screening
+    // FOV breath — dolly-zoom into a screening; and a farewell compression as the room recedes (outro)
     const pc = cam as THREE.PerspectiveCamera;
-    const fovTarget = ui.focus !== null ? FOCUS_FOV : DRUM.fov;
+    const outroT = clamp((p - 0.53) / 0.09, 0, 1);
+    const fovTarget = ui.focus !== null ? FOCUS_FOV : DRUM.fov - outroT * 1.5;
     const nf = damp(pc.fov, fovTarget, 2.6, dt);
     if (Math.abs(nf - pc.fov) > 0.0005) { pc.fov = nf; pc.updateProjectionMatrix(); }
   });

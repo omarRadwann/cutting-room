@@ -75,14 +75,18 @@ export default function Page() {
           </div>
         </section>
 
-        {/* scroll length that scrubs the drum through the reel */}
-        <div style={{ height: "480vh" }} aria-hidden="true" />
+        {/* scroll length that scrubs the drum through the reel (620vh: browsing ends at p0.50, the room
+            recedes from 0.53, and the heading arrives ~0.56 over the DIMMED stage — plus a breath between
+            the reel and the process. Calibrated against the Outfit reflow; re-check if card copy changes) */}
+        <div style={{ height: "620vh" }} aria-hidden="true" />
 
         <WorkProcess />
 
         <section className="colophon">
-          <h2 className="colo-statement" data-reveal>
-            Every frame is <em>directed</em>,<br />not merely generated.
+          <h2 className="colo-statement" data-reveal aria-label="Every frame is directed, not merely generated.">
+            <span className="kin-mask" aria-hidden="true"><span className="kin-piece" style={{ ["--i" as string]: 0 } as React.CSSProperties}>Every frame is <em>directed</em>,</span></span>
+            <br />
+            <span className="kin-mask" aria-hidden="true"><span className="kin-piece" style={{ ["--i" as string]: 1 } as React.CSSProperties}>not merely generated.</span></span>
           </h2>
           <p className="colo-lead">
             A cinematic advertising studio — directed, modelled, lit and graded in-house.
