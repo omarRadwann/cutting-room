@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshReflectorMaterial, useGLTF } from "@react-three/drei";
+import { MeshReflectorMaterial, useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { withBase } from "@/lib/withBase";
 import { PANEL_H, RADIUS } from "@/lib/drum-config";
@@ -281,23 +281,28 @@ function Backdrop() {
   );
 }
 
-/** The Blender-built soundstage shell — acoustic baffle wall, ceiling beam grid, angled side flats.
- *  ONE merged mesh with Cycles-baked VERTEX AO (real soft occlusion in every crevice, zero runtime cost,
- *  one draw call). Built + baked headless by blender/build_stage_shell.py. */
+/** The Blender-built soundstage shell v3 — baffle wall, ceiling grid, catwalks, cables, sandbags,
+ *  service door and a curved CYCLORAMA, with real chamfered edges (Bevel) and TRUE PATH-TRACED GI
+ *  baked in Cycles to a 2K lightmap on a second UV channel. Offline-render lighting, one draw call.
+ *  Built + baked headless by blender/build_stage_shell_v3.py. */
 function StageShell() {
   const { scene } = useGLTF(withBase("/models/stage-shell.glb"));
+  const lm = useTexture(withBase("/models/stage-lightmap.webp"));
   useMemo(() => {
+    lm.flipY = false;                       // glTF UV origin is top-left
+    lm.colorSpace = THREE.SRGBColorSpace;   // baked irradiance saved as sRGB PNG/WebP
+    lm.channel = 1;                         // TEXCOORD_1 = the Smart-UV lightmap channel
     scene.traverse((o) => {
       const m = o as THREE.Mesh;
       if (m.isMesh) {
         m.material = new THREE.MeshStandardMaterial({
-          color: new THREE.Color("#151a24"), roughness: 0.85, metalness: 0.3,
-          vertexColors: true, envMapIntensity: 0.75,
+          color: new THREE.Color("#39404e"), roughness: 0.82, metalness: 0.24,
+          lightMap: lm, lightMapIntensity: 1.5, envMapIntensity: 0.45,
         });
         m.raycast = () => null;
       }
     });
-  }, [scene]);
+  }, [scene, lm]);
   return <primitive object={scene} />;
 }
 
