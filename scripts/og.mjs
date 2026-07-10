@@ -16,8 +16,8 @@ const html = `<!doctype html><html><head>
     linear-gradient(0deg, rgba(7,7,11,0.6) 0%, transparent 30%)}
   .content{position:absolute;left:74px;top:0;height:630px;display:flex;flex-direction:column;justify-content:center;gap:12px;width:660px}
   .eyebrow{color:#d8a24a;letter-spacing:0.34em;text-transform:uppercase;font-family:'Inter',sans-serif;font-size:15px;font-weight:500}
-  .title{color:#f2ede3;font-family:'Fraunces',serif;font-size:104px;line-height:0.9;letter-spacing:-0.03em;font-weight:600}
-  .ar{font-family:'Amiri',serif;color:#d8a24a;font-size:44px;margin-top:8px}
+  .title{color:#f2ede3;font-family:'Fraunces',serif;font-size:168px;line-height:0.9;letter-spacing:0.04em;font-weight:600}
+  .ar{font-family:'Amiri',serif;color:#d8a24a;font-size:40px;margin-top:10px}
   .tag{color:#9a9488;font-family:'Inter',sans-serif;font-size:23px;line-height:1.5;max-width:30ch;margin-top:14px}
   .rule{width:64px;height:2px;background:#d8a24a;margin-top:20px;opacity:.8}
 </style></head><body>
@@ -25,8 +25,8 @@ const html = `<!doctype html><html><head>
   <div class="bg"></div><div class="scrim"></div>
   <div class="content">
     <div class="eyebrow">A cinematic film &amp; motion studio</div>
-    <div class="title">The Cutting<br>Room</div>
-    <div class="ar">غرفة المونتاج</div>
+    <div class="title">FLOW</div>
+    <div class="ar">The Cutting Room — غرفة المونتاج</div>
     <div class="rule"></div>
     <div class="tag">Architecture, fashion &amp; product — directed, lit and graded in-house. Cairo, working worldwide.</div>
   </div>

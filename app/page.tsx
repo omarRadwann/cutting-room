@@ -66,7 +66,7 @@ export default function Page() {
       <main id="main" className="content">
         <section className="hero">
           <div className="hero-inner">
-            <div className="hero-eyebrow">Selected work — film · motion · 3D</div>
+            <div className="hero-eyebrow">Flow — selected work · film · motion · 3D</div>
             {/* the rise is PAUSED by CSS until the preloader lifts (html[data-entered]) — plays in view, always */}
             <Kinetic as="h1" className="hero-title" text="The Cutting Room" by="word" trigger="load" delay={0.15} />
             <div className="hero-ar" dir="rtl">غرفة المونتاج</div>
@@ -115,7 +115,7 @@ export default function Page() {
 
           <div className="foot">
             <span>Cairo — القاهرة</span>
-            <span className="mono2">THE CUTTING ROOM · MMXXVI</span>
+            <span className="mono2">FLOW · THE CUTTING ROOM · MMXXVI</span>
           </div>
         </section>
       </main>

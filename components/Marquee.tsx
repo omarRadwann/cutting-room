@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { scroll } from "@/lib/scroll-store";
 import { prefersReducedMotion } from "@/lib/reduced-motion";
 
-const LINE = "FILM — MOTION — 3D — CAIRO — THE CUTTING ROOM — ";
+const LINE = "FLOW — FILM — MOTION — 3D — CAIRO — THE CUTTING ROOM — ";
 
 /**
  * Velocity-reactive kinetic marquee (the award-site type move): an outlined display band that drifts

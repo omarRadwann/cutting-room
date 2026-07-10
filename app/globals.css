@@ -240,7 +240,8 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
 .brand { display: flex; flex-direction: column; gap: 0.25rem; line-height: 1; }
 .brand-en { font-family: var(--font-display); font-variation-settings: "opsz" 22; font-weight: 500;
   text-transform: uppercase; letter-spacing: 0.16em; font-size: var(--t-sm); }
-.brand-ar { font-family: var(--font-ar); color: var(--muted); font-size: 0.82rem; letter-spacing: 0.02em; opacity: 0.85; }
+.brand-sub { font-family: var(--font-body); color: var(--muted); font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
+.brand-sub [dir="rtl"] { font-family: var(--font-ar); font-size: 0.8rem; letter-spacing: 0.02em; text-transform: none; }
 .nav-right { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.8rem); }
 .nav-meta { text-align: right; line-height: 1.35; }
 .nav-meta .k { font-size: var(--t-2xs); letter-spacing: var(--track-micro); text-transform: uppercase; color: var(--muted); display: block; }
@@ -517,5 +518,5 @@ html[data-phase="focus"] .hud, html[data-phase="focus"] .hint, html[data-phase="
   .hero-tag { max-width: 30ch; }
   /* film is full-bleed on a portrait phone → vertical scrim so the title & tag read over it */
   .hero-scrim { background: linear-gradient(180deg, rgba(5,5,9,0.85) 0%, rgba(5,5,9,0.3) 40%, rgba(5,5,9,0.36) 60%, rgba(5,5,9,0.82) 100%); }
-  .brand-ar { display: none; }
+  .brand-sub { display: none; }
 }

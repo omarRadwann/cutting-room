@@ -72,7 +72,7 @@ export default function Preloader() {
         <FlowMark />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.55rem" }}>
           <div style={{ fontFamily: "var(--font-body)", textTransform: "uppercase", letterSpacing: "0.3em", fontSize: "0.62rem", color: "var(--muted)" }}>
-            A film &amp; motion studio
+            The Cutting Room — a film &amp; motion studio
           </div>
           <div style={{ position: "relative", width: 168, height: 2, background: "rgba(242,237,227,0.14)", overflow: "hidden" }}>
             <i style={{ position: "absolute", inset: 0, background: "var(--accent)", transformOrigin: "left", transform: `scaleX(${disp / 100})`, transition: "transform 0.3s linear", display: "block" }} />

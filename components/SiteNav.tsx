@@ -9,8 +9,9 @@ export default function SiteNav() {
   return (
     <nav className="nav">
       <div className="brand" data-magnetic>
-        <span className="brand-en">THE CUTTING ROOM</span>
-        <span className="brand-ar" dir="rtl">غرفة المونتاج</span>
+        <span className="brand-en">FLOW</span>
+        {/* the studio is FLOW; "The Cutting Room" stays as the descriptor of the place */}
+        <span className="brand-sub">The Cutting Room · <span dir="rtl" lang="ar">غرفة المونتاج</span></span>
       </div>
       <div className="nav-right">
         <div className="nav-meta">

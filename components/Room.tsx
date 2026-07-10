@@ -43,8 +43,8 @@ function markingsTex(): THREE.CanvasTexture | null {
   // the production stencil, arced along the front guide
   ctx.fillStyle = "rgba(232,225,210,0.4)"; ctx.font = '600 46px "JetBrains Mono", monospace';
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  const label = "STAGE 01 · THE CUTTING ROOM";
-  const rText = (RADIUS + 1.35) * s, arc = 0.62; // radians of total sweep, centred at the front
+  const label = "FLOW · STAGE 01 · THE CUTTING ROOM";
+  const rText = (RADIUS + 1.35) * s, arc = 0.78; // radians of total sweep, centred at the front (scaled to the longer label)
   for (let i = 0; i < label.length; i++) {
     const t = i / (label.length - 1) - 0.5, a = t * arc; // 0 at front centre
     ctx.save();

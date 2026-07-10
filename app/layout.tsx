@@ -15,15 +15,15 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", displ
 
 // metadataBase makes the relative OG image resolve to an absolute URL; set NEXT_PUBLIC_SITE_URL at deploy.
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://omarradwann.github.io/cutting-room";
-const TITLE = "The Cutting Room — A Cinematic Film & Motion Studio";
-const DESC = "A cinematic film, motion & 3D studio — architecture, fashion and product, directed, lit and graded in-house. Cairo, working worldwide.";
+const TITLE = "FLOW — The Cutting Room · A Cinematic Film & Motion Studio";
+const DESC = "FLOW is a cinematic film, motion & 3D studio — architecture, fashion and product, directed, lit and graded in-house. Cairo, working worldwide.";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: { default: TITLE, template: "%s — The Cutting Room" },
+  title: { default: TITLE, template: "%s — FLOW" },
   description: DESC,
   openGraph: {
-    title: TITLE, description: DESC, type: "website", siteName: "The Cutting Room",
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "The Cutting Room" }],
+    title: TITLE, description: DESC, type: "website", siteName: "FLOW",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "FLOW — The Cutting Room" }],
   },
   twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: ["/og.jpg"] },
 };
