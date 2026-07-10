@@ -233,7 +233,9 @@ function Floor({ tier }: { tier: string }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y, RADIUS * 0.1]} receiveShadow>
       <planeGeometry args={[120, 120]} />
-      <MeshReflectorMaterial blur={hi ? [320, 120] : [380, 140]} resolution={hi ? 1024 : 128} mixBlur={1} mixStrength={hi ? 1.4 : 0.88} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
+      {/* blur/mix softened so the featured film's reflection reads as a GLOW, not a continuation of the
+          frame ("the video overflows its bottom" — the user's exact mis-read on a bright emissive screen) */}
+      <MeshReflectorMaterial blur={hi ? [420, 170] : [520, 210]} resolution={hi ? 1024 : 128} mixBlur={1} mixStrength={hi ? 1.05 : 0.72} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
     </mesh>
   );
 }

@@ -31,6 +31,14 @@ export default function HeroVideo() {
   if (!ok) return null;
   return (
     <div className="hero-video" aria-hidden="true">
+      {/* the poster sits PERMANENTLY under the video: if the decoder drops a frame on a busy iGPU
+          (play start, loop point, loader handoff) the gap reveals the poster — never a black flicker */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={withBase("/media/hero.webp")}
+        alt=""
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+      />
       <video
         ref={vref}
         src={withBase("/media/hero.mp4")}
@@ -40,6 +48,7 @@ export default function HeroVideo() {
         playsInline
         autoPlay
         preload="auto"
+        style={{ position: "relative" }}
         onError={() => { setOk(false); setHeroReady(true); /* missing/undecodable video must never hold the loader */ }}
         onCanPlay={() => vref.current?.play().catch(() => {})}
         onCanPlayThrough={() => setHeroReady(true)}

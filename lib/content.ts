@@ -32,20 +32,21 @@ const still = (
 
 const W = 16 / 9, T = 9 / 16;
 
-// order = the sequence around the drum (front-to-front as you scroll). Interleaved so aspect (W/T) and
-// register (place / figure / object / concept) alternate — no two similar films ever sit side by side.
+// order = the sequence around the drum (front-to-front as you scroll). 3 wide films anchor beats
+// 1 / 5 / 9 (a wide ESTABLISHING shot every fourth film); the verticals detail between them, and the
+// grades alternate warm/cool so every changeover re-lights the room. Strength stays the closer.
 export const CLIPS: Clip[] = [
   clip("coast",        "The Coast",           "PLACE",  "Real-estate film", "#d99a4a", "A slow crane over the coast at golden hour; a district unfurls to the sea.", "Cinema 4D · Octane · After Effects · DaVinci", W),
   clip("crystal-city", "The Crystal City",    "FIGURE", "Concept film",     "#1f6f86", "A world of her own — the opening beat of an underwater crystal city.",       "Houdini · Octane · Nuke · DaVinci", T),
-  clip("villa",        "The Villa",           "PLACE",  "Architecture",     "#5f93b0", "A minimalist sea-house — travertine, still water and an unbroken horizon.",  "Cinema 4D · Corona · After Effects", W),
   clip("procession",   "Procession",          "FIGURE", "Fashion film",     "#c69a52", "Anamorphic 35mm montage — the wearers move through golden light.",           "Blender · Marvelous Designer · After Effects", T),
-  clip("afterdark",    "After Dark",          "PLACE",  "Real-estate film", "#e0a94a", "Twin towers alight over the marina, mirrored in still water.",               "Cinema 4D · Redshift · After Effects", W),
-  clip("perfume",      "The Pour",            "OBJECT", "Fragrance film",   "#d9a441", "Amber pours slow as honey — a fragrance built drop by drop.",                "Houdini · Octane · Nuke · DaVinci", T),
+  clip("iridescence",  "Iridescence",         "OBJECT", "Handbag film",     "#8f86ad", "Oil-slick lacquer under a gold clasp — hardware shot like jewellery.",       "Blender · Octane · After Effects · DaVinci", T),
+  clip("villa",        "The Villa",           "PLACE",  "Architecture",     "#5f93b0", "A minimalist sea-house — travertine, still water and an unbroken horizon.",  "Cinema 4D · Corona · After Effects", W),
+  clip("monogram",     "The Monogram",        "FIGURE", "Denim campaign",   "#a8823f", "Waxed denim up close — the mark embossed in black leather.",                 "Blender · Substance · After Effects · DaVinci", T),
+  clip("goldsmith",    "The Goldsmith",       "OBJECT", "Jewellery film",   "#e0864a", "Flame, crucible, and a river of diamonds — jewellery born in fire.",         "Blender · Octane · After Effects · DaVinci", T),
+  clip("thread-tide",  "Thread & Tide",       "OBJECT", "Accessories film", "#6f9db4", "A woven tote on a mirror of shore-light; thread rings the morning sea.",     "Cinema 4D · Octane · After Effects · DaVinci", T),
   clip("groundwork",   "Groundwork",          "PLACE",  "Real-estate film", "#c8b48a", "A construction time-lapse; a skyline rises from bare shore.",                "Houdini · After Effects · DaVinci", W),
   clip("makers",       "The Maker's Mark",    "OBJECT", "Leather atelier",  "#5c8a74", "Hands burnish the leather; brass finds its place — craft, up close.",        "Blender · Substance · After Effects · DaVinci", T),
-  clip("terrace",      "The Terrace",         "PLACE",  "Architecture",     "#7fa8c0", "A minimalist white terrace opens, unbroken, to the sea.",                    "Cinema 4D · Corona · After Effects", W),
-  clip("goldsmith",    "The Goldsmith",       "OBJECT", "Jewellery film",   "#e0864a", "Flame, crucible, and a river of diamonds — jewellery born in fire.",         "Blender · Octane · After Effects · DaVinci", T),
-  clip("reveal",       "The Reveal",          "PLACE",  "Real-estate film", "#cf9350", "A drone cranes back to unveil a whole golden-hour coast — lagoons and marina.", "Houdini · Octane · After Effects · DaVinci", W),
+  clip("perfume",      "The Pour",            "OBJECT", "Fragrance film",   "#d9a441", "Amber pours slow as honey — a fragrance built drop by drop.",                "Houdini · Octane · Nuke · DaVinci", T),
   clip("strength",     "Strength — قوة",      "OBJECT", "Jewellery film",   "#c99b4f", "A talisman descends through the storm-light; strength, cast in silver.",     "Blender · Octane · After Effects · DaVinci", T),
 ];
 

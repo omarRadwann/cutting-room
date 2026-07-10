@@ -154,7 +154,9 @@ export default function VideoPanel({
       {/* soft contact shadow grounding the film on the studio floor (deepens under the featured film) */}
       {shadow && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y + 0.012, 0.2]}>
-          <planeGeometry args={[w + 0.5, 1.3]} />
+          {/* wider + deeper: detaches the frame from its floor reflection so the film never reads
+              as spilling past its bottom rail */}
+          <planeGeometry args={[w + 0.9, 1.9]} />
           <meshBasicMaterial ref={shadowMat} map={shadow} transparent opacity={0.3} depthWrite={false} toneMapped={false} />
         </mesh>
       )}
