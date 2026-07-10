@@ -83,6 +83,14 @@ export function demoteTier() {
 export function cycleTier() { const o: Tier[] = ["high", "standard", "safe"]; current = o[(o.indexOf(getTier()) + 1) % 3]; forced = true; try { localStorage.setItem("aa-tier", current); } catch { /* ignore */ } emit(); }
 export function subscribeTier(f: () => void) { subs.add(f); return () => { subs.delete(f); }; }
 
+/** Big monitors push ~2× the fragments of the 1360px test rig (the additive shaft/haze stack scales
+ *  with pixels). On STANDARD, shed overdraw (a shaft, a third of the dust) past ~1.75MP of CSS viewport.
+ *  HIGH keeps the full rig — a capable GPU should render the whole set. */
+export function wideShed(): boolean {
+  if (typeof window === "undefined") return false;
+  return getTier() === "standard" && window.innerWidth * window.innerHeight > 1_750_000;
+}
+
 export function useQuality(): Quality {
   const [q, setQ] = useState<Quality>(() => PRESETS[typeof window === "undefined" ? "standard" : getTier()]);
   useEffect(() => { setQ(getQuality()); return subscribeTier(() => setQ(getQuality())); }, []);

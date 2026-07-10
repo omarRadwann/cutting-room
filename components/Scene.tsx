@@ -3,7 +3,7 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, type ReactElement } from "react";
 import * as THREE from "three";
-import { PerformanceMonitor, Preload, Environment, Lightformer } from "@react-three/drei";
+import { PerformanceMonitor, Preload, Environment, Lightformer, useProgress } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, SMAA, N8AO, DepthOfField, ChromaticAberration, Noise, HueSaturation } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import Drum from "@/components/Drum";
@@ -33,15 +33,29 @@ function AdaptiveQuality({ tier, min, max }: { tier: string; min: number; max: n
 
 /** THE hero-video smoothness fix: while the opaque hero film owns the screen (entered, at the very top,
  *  nothing focused), the WebGL scene is 100% hidden — so STOP rendering it and give the video the whole
- *  GPU. Renders during the preloader (to warm shaders behind the curtain) and resumes on the first scroll. */
+ *  GPU. During the PRELOADER it renders only while assets stream (so uploads land) plus a short
+ *  compile/bind tail, then pauses too — on an iGPU the full-cost stage render behind the curtain was
+ *  fighting the loader video and the hero buffering for the same silicon. */
 function FrameGate() {
   const setFrameloop = useThree((s) => s.setFrameloop);
   useEffect(() => {
-    let raf = 0, running = true;
+    let raf = 0, running = true, warmLeft = 26;
     const loop = () => {
       const ui = getUI();
-      const covered = ui.entered && ui.focus === null && scroll.progress < 0.008 && Math.abs(scroll.velocity) < 0.02;
-      if (covered === running) { running = !covered; setFrameloop(running ? "always" : "never"); }
+      let want: boolean;
+      if (!ui.entered) {
+        // read the loader store IMPERATIVELY — subscribing via the hook makes React schedule
+        // FrameGate updates while a suspending component is mid-render (setState-in-render error)
+        const l = useProgress.getState();
+        const streaming = l.active || l.progress < 100;
+        if (streaming) warmLeft = 26; // new assets → re-open the warm window so their uploads render
+        else if (warmLeft > 0) warmLeft--;
+        want = streaming || warmLeft > 0;
+      } else {
+        const covered = ui.focus === null && scroll.progress < 0.008 && Math.abs(scroll.velocity) < 0.02;
+        want = !covered;
+      }
+      if (want !== running) { running = want; setFrameloop(running ? "always" : "never"); }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

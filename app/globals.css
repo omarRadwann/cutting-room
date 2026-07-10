@@ -290,6 +290,10 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
   color: var(--muted); font-size: var(--t-2xs); letter-spacing: var(--track-micro); text-transform: uppercase; transition: opacity 0.6s; }
 
 /* film index (right rail) — shows during browse */
+/* right-edge scrim under the index — on wide viewports the drum's side panel swings right where the
+   labels live; this stage-falloff keeps the rail readable on ANY width (and doubles as edge vignette) */
+.film-index::before { content: ""; position: fixed; top: 0; right: 0; bottom: 0; width: min(26vw, 400px);
+  background: linear-gradient(to left, rgba(5,6,10,0.92), rgba(5,6,10,0.5) 46%, transparent); z-index: -1; pointer-events: none; }
 .film-index { position: fixed; right: clamp(1rem, 2.5vw, 2.2rem); top: 50%; transform: translateY(-50%); z-index: 6;
   display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity .5s var(--ease-out); }
 html[data-phase="browse"] .film-index { opacity: 1; pointer-events: auto; }

@@ -10,7 +10,7 @@ import { CLIPS } from "@/lib/content";
 import { getUI } from "@/lib/ui-store";
 import { scroll } from "@/lib/scroll-store";
 import { drumState } from "@/lib/drum-state";
-import { useQuality } from "@/lib/quality";
+import { useQuality, wideShed } from "@/lib/quality";
 import { goboTex } from "@/lib/gobo-texture";
 import SoundStage from "@/components/SoundStage";
 
@@ -346,7 +346,7 @@ export default function Room() {
       <DoorGlow />
       <StageSign />
       <StageLight radial={radial} />
-      {q.tier !== "safe" && <Dust count={q.tier === "high" ? 700 : 220} radial={radial} />}
+      {q.tier !== "safe" && <Dust count={q.tier === "high" ? 700 : wideShed() ? 140 : 220} radial={radial} />}
     </group>
   );
 }
