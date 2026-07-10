@@ -155,12 +155,12 @@ export default function VideoPanel({
         <meshPhysicalMaterial map={matTex(w, h) ?? undefined} color="#ffffff" roughness={0.92} metalness={0.15} sheen={1} sheenColor="#3a2f4f" sheenRoughness={0.5} envMapIntensity={1.1} />
       </mesh>
       {/* museum placard — engraved plate under the piece: "01 — THE COAST" */}
-      <group position={[0, -h / 2 - 0.19, 0.05]}>
+      <group position={[0, -h / 2 - 0.2, 0.05]}>
         <mesh raycast={() => null}>
-          <boxGeometry args={[Math.min(w * 0.72, 1.5), 0.13, 0.02]} />
+          <boxGeometry args={[Math.min(w * 0.78, 1.62), 0.15, 0.02]} />
           <meshStandardMaterial color="#101318" metalness={0.85} roughness={0.35} envMapIntensity={1.4} />
         </mesh>
-        <Text position={[0, 0, 0.013]} fontSize={0.045} letterSpacing={0.18} color="#cfc8ba" anchorX="center" anchorY="middle" raycast={() => null}>
+        <Text position={[0, 0, 0.013]} fontSize={0.056} letterSpacing={0.16} color="#d6cfc0" anchorX="center" anchorY="middle" raycast={() => null}>
           {`${String(index + 1).padStart(2, "0")} — ${clip.title.toUpperCase()}`}
         </Text>
       </group>

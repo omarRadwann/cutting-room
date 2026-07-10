@@ -11,6 +11,7 @@ import { getUI } from "@/lib/ui-store";
 import { scroll } from "@/lib/scroll-store";
 import { drumState } from "@/lib/drum-state";
 import { useQuality } from "@/lib/quality";
+import { goboTex } from "@/lib/gobo-texture";
 import SoundStage from "@/components/SoundStage";
 
 const FLOOR_Y = -PANEL_H / 2 - 0.14;
@@ -232,7 +233,7 @@ function Floor({ tier }: { tier: string }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y, RADIUS * 0.1]} receiveShadow>
       <planeGeometry args={[120, 120]} />
-      <MeshReflectorMaterial blur={hi ? [320, 120] : [320, 110]} resolution={hi ? 1024 : 192} mixBlur={1} mixStrength={hi ? 1.4 : 0.95} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
+      <MeshReflectorMaterial blur={hi ? [320, 120] : [360, 130]} resolution={hi ? 1024 : 144} mixBlur={1} mixStrength={hi ? 1.4 : 0.9} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
     </mesh>
   );
 }
@@ -300,10 +301,11 @@ function StageShell() {
   return <primitive object={scene} />;
 }
 
-/** The featured film's spotlight rig — beam + back-glow + floor pool — GLIDES to whatever film the
- *  user leaves at front, even resting off-centre, so the star is always in the light: a real studio. */
+/** The featured film's spotlight rig — beam + back-glow + floor pool + the film-gate SLATS — GLIDES to
+ *  whatever film the user leaves at front, even resting off-centre, so the star is always in the light. */
 function StageLight({ radial }: { radial: THREE.Texture }) {
   const grp = useRef<THREE.Group>(null);
+  const gobo = useMemo(() => goboTex(), []);
   useFrame((_, dt) => {
     const g = grp.current; if (!g) return;
     const tgt = g.rotation.y + wrap(drumState.frontAngle - g.rotation.y); // shortest path to the front film
@@ -313,6 +315,14 @@ function StageLight({ radial }: { radial: THREE.Texture }) {
     <group ref={grp}>
       <LightPools radial={radial} />
       <Beam />
+      {/* film-gate slats raking the floor in front of the featured film (zero-light additive plane —
+          the profile-gated replacement for the retired gobo SpotLight) */}
+      {gobo && (
+        <mesh rotation={[-Math.PI / 2, 0, 0.22]} position={[0.6, FLOOR_Y + 0.012, RADIUS - 1.7]} renderOrder={3} raycast={() => null}>
+          <planeGeometry args={[6.4, 4.2]} />
+          <meshBasicMaterial map={gobo} transparent opacity={0.16} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} fog={false} />
+        </mesh>
+      )}
     </group>
   );
 }

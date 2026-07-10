@@ -58,7 +58,7 @@ export default function Page() {
       <FilmIndex />
       <FocusOverlay />
       <div className="hint" aria-hidden="true">drag · scroll · click</div>
-      <div className="hero-cue" aria-hidden="true">Scroll to enter</div>
+      <div className="hero-cue" aria-hidden="true">Roll the reel</div>
 
       {/* DOM scroll-driver + crawlable content */}
       <main id="main" className="content">
