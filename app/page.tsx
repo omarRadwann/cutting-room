@@ -12,6 +12,7 @@ import Hud from "@/components/Hud";
 import GradeWash from "@/components/GradeWash";
 import FocusOverlay from "@/components/FocusOverlay";
 import FilmIndex from "@/components/FilmIndex";
+import MobileStepper from "@/components/MobileStepper";
 import UIState from "@/components/UIState";
 import AudioLayer from "@/components/AudioLayer";
 import WorkProcess from "@/components/WorkProcess";
@@ -56,6 +57,7 @@ export default function Page() {
       <SiteNav />
       <Hud />
       <FilmIndex />
+      <MobileStepper />
       <FocusOverlay />
       <div className="hint" aria-hidden="true">drag · scroll · click</div>
       <div className="hero-cue" aria-hidden="true">Roll the reel</div>
@@ -91,7 +93,7 @@ export default function Page() {
           <p className="colo-lead">
             A cinematic advertising studio — directed, modelled, lit and graded in-house.
             Blender,&nbsp;Cinema&nbsp;4D and Houdini for the build; After&nbsp;Effects and DaVinci for the
-            finish. Eleven films here; the full reel on request.
+            finish. Twelve films here; the full reel on request.
           </p>
 
           <div className="strip" data-reveal style={{ transitionDelay: ".08s" }}>

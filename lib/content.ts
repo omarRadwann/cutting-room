@@ -40,12 +40,13 @@ export const CLIPS: Clip[] = [
   clip("villa",        "The Villa",           "PLACE",  "Architecture",     "#5f93b0", "A minimalist sea-house — travertine, still water and an unbroken horizon.",  "Cinema 4D · Corona · After Effects", W),
   clip("procession",   "Procession",          "FIGURE", "Fashion film",     "#c69a52", "Anamorphic 35mm montage — the wearers move through golden light.",           "Blender · Marvelous Designer · After Effects", T),
   clip("afterdark",    "After Dark",          "PLACE",  "Real-estate film", "#e0a94a", "Twin towers alight over the marina, mirrored in still water.",               "Cinema 4D · Redshift · After Effects", W),
-  clip("heritage-film","Heritage, in Motion", "OBJECT", "ZEE",              "#a8763c", "A fifteen-second brand film, held on its first and final frame.",            "Blender · After Effects · DaVinci Resolve", T),
+  clip("perfume",      "The Pour",            "OBJECT", "Fragrance film",   "#d9a441", "Amber pours slow as honey — a fragrance built drop by drop.",                "Houdini · Octane · Nuke · DaVinci", T),
   clip("groundwork",   "Groundwork",          "PLACE",  "Real-estate film", "#c8b48a", "A construction time-lapse; a skyline rises from bare shore.",                "Houdini · After Effects · DaVinci", W),
-  clip("atelier",      "The Maker's Mark",    "OBJECT", "Product film",     "#b5824a", "Macro on the craft — suede, cork and one engraved buckle in raking light.",  "Blender · Substance · After Effects · DaVinci", T),
+  clip("makers",       "The Maker's Mark",    "OBJECT", "Leather atelier",  "#5c8a74", "Hands burnish the leather; brass finds its place — craft, up close.",        "Blender · Substance · After Effects · DaVinci", T),
   clip("terrace",      "The Terrace",         "PLACE",  "Architecture",     "#7fa8c0", "A minimalist white terrace opens, unbroken, to the sea.",                    "Cinema 4D · Corona · After Effects", W),
-  clip("strength",     "Strength — قوة",      "OBJECT", "Jewellery film",   "#c99b4f", "A talisman descends through the storm-light; strength, cast in silver.",     "Blender · Octane · After Effects · DaVinci", T),
+  clip("goldsmith",    "The Goldsmith",       "OBJECT", "Jewellery film",   "#e0864a", "Flame, crucible, and a river of diamonds — jewellery born in fire.",         "Blender · Octane · After Effects · DaVinci", T),
   clip("reveal",       "The Reveal",          "PLACE",  "Real-estate film", "#cf9350", "A drone cranes back to unveil a whole golden-hour coast — lagoons and marina.", "Houdini · Octane · After Effects · DaVinci", W),
+  clip("strength",     "Strength — قوة",      "OBJECT", "Jewellery film",   "#c99b4f", "A talisman descends through the storm-light; strength, cast in silver.",     "Blender · Octane · After Effects · DaVinci", T),
 ];
 
 export const STILLS: Still[] = [

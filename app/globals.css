@@ -303,6 +303,15 @@ html[data-phase="browse"] .film-index { opacity: 1; pointer-events: auto; }
 @keyframes dot-breathe { 0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent); } 50% { opacity: 0.55; box-shadow: 0 0 12px var(--accent); } }
 @media (max-width: 900px) { .film-index { display: none; } }
 
+/* phone film steppers — the touch replacement for the desktop film-index (browse phase only) */
+.m-step { display: none; position: fixed; right: clamp(0.9rem, 4vw, 1.4rem); bottom: clamp(4.2rem, 12vh, 5.6rem); z-index: 6;
+  flex-direction: column; gap: 0.55rem; opacity: 0; pointer-events: none; transition: opacity .45s var(--ease-out); }
+html[data-phase="browse"] .m-step { opacity: 1; pointer-events: auto; }
+.m-step button { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: rgba(12,12,19,0.55);
+  color: var(--text); font-size: 1.15rem; cursor: pointer; transition: border-color .25s, background .25s, transform .15s var(--ease-out); }
+.m-step button:active { transform: scale(0.94); border-color: var(--accent); }
+@media (max-width: 900px) { .m-step { display: flex; } }
+
 /* hero scroll cue — fixed bottom-centre, fades out as you scroll (tied to --hero-op) */
 .hero-cue { position: fixed; bottom: clamp(1.2rem, 3vw, 2rem); left: 50%; transform: translateX(-50%); z-index: 6;
   font-size: 0.6rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted);

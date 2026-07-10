@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text, useTexture, useVideoTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -103,6 +103,20 @@ export default function VideoPanel({
   const tiltY = useRef(0);
   const w = width, h = height;
 
+  // the CHANGEOVER DISSOLVE: when this film loses the front, its video LINGERS paused for 750ms and
+  // fades out over the poster while the new front's video fades in — a true projection crossfade.
+  const [linger, setLinger] = useState(false);
+  const lingerT = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (active) {
+      setLinger(true);
+      if (lingerT.current) { clearTimeout(lingerT.current); lingerT.current = null; }
+    } else {
+      lingerT.current = setTimeout(() => setLinger(false), 750);
+    }
+    return () => { if (lingerT.current) clearTimeout(lingerT.current); };
+  }, [active]);
+
   useFrame((_, dt) => {
     const lit = active || hov.current;
     // projector CHANGEOVER — a brief hot flash the instant a film takes the front (the reel switches)
@@ -174,11 +188,11 @@ export default function VideoPanel({
         <planeGeometry args={[w, h]} />
         <meshStandardMaterial ref={posterMat} map={poster} emissiveMap={poster} emissive="#ffffff" emissiveIntensity={0.5} roughness={0.55} metalness={0} />
       </mesh>
-      {/* front film mounts immediately but PLAYS only once the hero uncovers it — pre-buffered, zero
-          decode competition during the hero beat, instant start on the first scroll */}
-      {active && !postersOnly() && (
+      {/* front film mounts immediately but PLAYS only while it holds the front — and LINGERS fading
+          for 750ms when it loses it (the dissolve). Paused lingering video costs no decode. */}
+      {(active || linger) && !postersOnly() && (
         <Suspense fallback={null}>
-          <ActiveVideo src={withBase(clip.src)} unmuted={unmuted} playing={!intro} expose={focused} w={w} h={h} />
+          <ActiveVideo src={withBase(clip.src)} unmuted={unmuted} playing={!intro && active} expose={focused} w={w} h={h} />
         </Suspense>
       )}
       {/* fresnel glass cover — reflects the softbox rig so each film reads as a framed piece behind glass;
