@@ -43,7 +43,9 @@ export default function CinematicRig() {
       lookY = lerp(0, 0.04, reveal);
     }
     const k = ui.focus !== null ? 3.0 : 2.4;
-    cam.position.x = damp(cam.position.x, 0, k, dt);
+    // velocity sway — the camera leans into the scroll like a dolly grip, settling back at rest
+    const sway = ui.focus !== null ? 0 : clamp(scroll.velocity * 0.05, -0.26, 0.26);
+    cam.position.x = damp(cam.position.x, sway, 2.1, dt);
     cam.position.y = damp(cam.position.y, targetY, k, dt);
     cam.position.z = damp(cam.position.z, targetZ, k, dt);
 

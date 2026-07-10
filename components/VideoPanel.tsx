@@ -5,10 +5,13 @@ import { Text, useTexture, useVideoTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { withBase } from "@/lib/withBase";
 import { postersOnly } from "@/lib/force";
+import { scroll } from "@/lib/scroll-store";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 import { RADIUS, PANEL_H } from "@/lib/drum-config";
 import type { Clip } from "@/lib/content";
 
 const damp = THREE.MathUtils.damp;
+const clamp = THREE.MathUtils.clamp;
 const FLOOR_Y = -PANEL_H / 2 - 0.14;
 
 // one shared soft radial (dark centre → transparent) for every panel's floor contact-shadow
@@ -64,18 +67,31 @@ export default function VideoPanel({
   const poster = useTexture(withBase(clip.poster));
   poster.colorSpace = THREE.SRGBColorSpace;
   const shadow = useMemo(() => shadowTex(), []);
+  const reduce = useMemo(() => prefersReducedMotion(), []);
+  const prevActive = useRef(false);
+  const ignite = useRef(0);
   const w = width, h = height;
 
   useFrame((_, dt) => {
     const lit = active || hov.current;
+    // projector CHANGEOVER — a brief hot flash the instant a film takes the front (the reel switches)
+    if (active && !prevActive.current && !reduce) ignite.current = 1;
+    prevActive.current = active;
+    ignite.current = Math.max(0, ignite.current - dt * 2.4);
     if (grp.current) {
       // hero hierarchy — the featured film SEIZES the frame; neighbours defer (breaks the "xeroxed tiles" look)
       const s = focused ? 1.15 : active ? 1.13 : hov.current ? 1.0 : 0.9;
       grp.current.scale.setScalar(damp(grp.current.scale.x, s, 7, dt));
+      // the reel ASSEMBLES as the curtain lifts — each film rises into place, staggered around the drum
+      const birth = reduce ? 1 : clamp((scroll.progress - 0.018 - index * 0.006) / 0.05, 0, 1);
+      const eb = 1 - Math.pow(1 - birth, 3);
+      grp.current.position.y = (eb - 1) * 0.95;
+      grp.current.rotation.x = (1 - eb) * -0.14;
     }
     if (posterMat.current) {
-      // dim non-featured films by dropping the screen's self-glow, not by greying the albedo
-      posterMat.current.emissiveIntensity = damp(posterMat.current.emissiveIntensity, lit ? 0.85 : 0.32, 6, dt);
+      // dim non-featured films via self-glow; the changeover flash rides on top and decays
+      const flash = ignite.current * ignite.current * 0.85;
+      posterMat.current.emissiveIntensity = damp(posterMat.current.emissiveIntensity, (lit ? 0.85 : 0.32) + flash, 6, dt);
     }
     if (shadowMat.current) {
       // the featured film presses a deeper contact shadow into the floor; neighbours sit lighter

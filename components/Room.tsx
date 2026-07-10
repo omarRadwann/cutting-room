@@ -1,8 +1,9 @@
 "use client";
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshReflectorMaterial } from "@react-three/drei";
+import { MeshReflectorMaterial, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { withBase } from "@/lib/withBase";
 import { PANEL_H, RADIUS } from "@/lib/drum-config";
 import { SHAFT_VERT, SHAFT_FRAG } from "@/lib/shaft-shader";
 import { CLIPS } from "@/lib/content";
@@ -145,6 +146,26 @@ function Backdrop() {
   );
 }
 
+/** The Blender-built soundstage shell — acoustic baffle wall, ceiling beam grid, angled side flats.
+ *  ONE merged mesh with Cycles-baked VERTEX AO (real soft occlusion in every crevice, zero runtime cost,
+ *  one draw call). Built + baked headless by blender/build_stage_shell.py. */
+function StageShell() {
+  const { scene } = useGLTF(withBase("/models/stage-shell.glb"));
+  useMemo(() => {
+    scene.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh) {
+        m.material = new THREE.MeshStandardMaterial({
+          color: new THREE.Color("#151a24"), roughness: 0.85, metalness: 0.3,
+          vertexColors: true, envMapIntensity: 0.75,
+        });
+        m.raycast = () => null;
+      }
+    });
+  }, [scene]);
+  return <primitive object={scene} />;
+}
+
 /** The featured film's spotlight rig — beam + back-glow + floor pool — GLIDES to whatever film the
  *  user leaves at front, even resting off-centre, so the star is always in the light: a real studio. */
 function StageLight({ radial }: { radial: THREE.Texture }) {
@@ -168,6 +189,7 @@ export default function Room() {
   return (
     <group>
       <Backdrop />
+      <StageShell />
       <SoundStage tier={q.tier} />
       <Floor tier={q.tier} />
       <StageLight radial={radial} />

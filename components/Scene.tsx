@@ -12,6 +12,8 @@ import CinematicRig from "@/components/CinematicRig";
 import PerfReporter from "@/components/PerfReporter";
 import { DRUM } from "@/lib/drum-config";
 import { dprCap } from "@/lib/force";
+import { scroll } from "@/lib/scroll-store";
+import { getUI } from "@/lib/ui-store";
 import { useQuality, demoteTier, tierForced } from "@/lib/quality";
 
 /** STANDARD/SAFE scale DPR with FPS; HIGH is pinned to its cap (via the Canvas dpr prop) so a capable GPU
@@ -27,6 +29,25 @@ function AdaptiveQuality({ tier, min, max }: { tier: string; min: number; max: n
       onFallback={() => { setDpr(min); if (!tierForced()) demoteTier(); }}
     />
   );
+}
+
+/** THE hero-video smoothness fix: while the opaque hero film owns the screen (entered, at the very top,
+ *  nothing focused), the WebGL scene is 100% hidden — so STOP rendering it and give the video the whole
+ *  GPU. Renders during the preloader (to warm shaders behind the curtain) and resumes on the first scroll. */
+function FrameGate() {
+  const setFrameloop = useThree((s) => s.setFrameloop);
+  useEffect(() => {
+    let raf = 0, running = true;
+    const loop = () => {
+      const ui = getUI();
+      const covered = ui.entered && ui.focus === null && scroll.progress < 0.008 && Math.abs(scroll.velocity) < 0.02;
+      if (covered === running) { running = !covered; setFrameloop(running ? "always" : "never"); }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => { cancelAnimationFrame(raf); setFrameloop("always"); };
+  }, [setFrameloop]);
+  return null;
 }
 
 /** Compile all materials + upload assets up-front so the first time a later scene appears there's no
@@ -85,6 +106,7 @@ export default function Scene() {
       }}
     >
       <AdaptiveQuality tier={q.tier} min={q.dprMin} max={q.dprMax} />
+      <FrameGate />
       <PerfReporter />
       {/* dark cinema void; fog dissolves the back of the drum into black (scaled to the drum radius) */}
       <color attach="background" args={["#06080c"]} />

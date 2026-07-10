@@ -277,6 +277,8 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
 .hud { position: fixed; left: clamp(1.1rem, 3vw, 2.4rem); bottom: clamp(1.1rem, 3vw, 2rem); z-index: 6; }
 .hud .count { font-family: var(--font-mono); font-size: var(--t-xl); line-height: 1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .hud .count .sep { color: var(--muted); }
+.hud .hud-n { display: inline-block; animation: hud-roll 0.38s var(--ease-out); }
+@keyframes hud-roll { from { opacity: 0; transform: translateY(0.35em); } to { opacity: 1; transform: none; } }
 .hud .chap { margin-top: 0.65rem; display: flex; align-items: baseline; gap: 0.7rem; }
 .hud .chap .en { text-transform: uppercase; letter-spacing: var(--track-label); font-size: var(--t-xs); color: var(--text); }
 .hud .chap .ar { color: var(--muted); font-size: 0.92rem; }

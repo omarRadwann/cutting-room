@@ -11,7 +11,7 @@ export default function Hud() {
   const c = CHAPTERS.find((x) => x.key === clip?.chapter);
   return (
     <div className="hud" aria-hidden="true">
-      <div className="count">{pad(idx)}<span className="sep"> / {pad(CLIPS.length - 1)}</span></div>
+      <div className="count"><span className="hud-n" key={idx}>{pad(idx)}</span><span className="sep"> / {pad(CLIPS.length - 1)}</span></div>
       <div className="chap">
         <span className="en">{clip?.title}</span>
         {c && <span className="ar" dir="rtl">{c.ar}</span>}
