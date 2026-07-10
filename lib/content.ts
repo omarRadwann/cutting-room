@@ -44,6 +44,7 @@ export const CLIPS: Clip[] = [
   clip("groundwork",   "Groundwork",          "PLACE",  "Real-estate film", "#c8b48a", "A construction time-lapse; a skyline rises from bare shore.",                "Houdini · After Effects · DaVinci", W),
   clip("atelier",      "The Maker's Mark",    "OBJECT", "Product film",     "#b5824a", "Macro on the craft — suede, cork and one engraved buckle in raking light.",  "Blender · Substance · After Effects · DaVinci", T),
   clip("terrace",      "The Terrace",         "PLACE",  "Architecture",     "#7fa8c0", "A minimalist white terrace opens, unbroken, to the sea.",                    "Cinema 4D · Corona · After Effects", W),
+  clip("strength",     "Strength — قوة",      "OBJECT", "Jewellery film",   "#c99b4f", "A talisman descends through the storm-light; strength, cast in silver.",     "Blender · Octane · After Effects · DaVinci", T),
   clip("reveal",       "The Reveal",          "PLACE",  "Real-estate film", "#cf9350", "A drone cranes back to unveil a whole golden-hour coast — lagoons and marina.", "Houdini · Octane · After Effects · DaVinci", W),
 ];
 

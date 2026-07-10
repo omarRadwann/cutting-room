@@ -373,6 +373,22 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .strip img:hover { filter: none; transform: translateY(-4px); }
 .foot { display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: 0.74rem; letter-spacing: 0.04em; border-top: 1px solid var(--line); padding-top: 1.2rem; }
 
+/* velocity-reactive kinetic marquee — outlined display band, speed + skew ride the scroll */
+.mq { overflow: hidden; margin: 0 calc(-1 * clamp(1.2rem, 6vw, 6rem)); padding: 0 0 clamp(2.6rem, 6vw, 4.5rem); }
+.mq-skew { will-change: transform; }
+.mq-track { display: inline-flex; white-space: nowrap; will-change: transform;
+  font-family: var(--font-display); font-variation-settings: "opsz" 144; font-weight: 500;
+  font-size: clamp(2.6rem, 6.5vw, 5.6rem); letter-spacing: 0.04em; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1px rgba(242,237,227,0.22); }
+.mq-track span { padding-right: 0.5em; }
+@media (prefers-reduced-motion: reduce) { .mq-track { -webkit-text-stroke-color: rgba(242,237,227,0.14); } }
+
+/* the CTA's nested arrow orb — kinetic tension inside the button (button-in-button) */
+.cta-orb { display: inline-grid; place-items: center; width: 1.12em; height: 1.12em; margin-left: 0.4em;
+  border: 1px solid rgba(216,162,74,0.45); border-radius: 50%; font-style: normal; font-size: 0.52em;
+  vertical-align: 0.14em; transition: transform 0.3s var(--ease-out), background-color 0.3s, border-color 0.3s; }
+.colo-cta:hover .cta-orb { transform: translateX(5px); background: rgba(216,162,74,0.14); border-color: var(--accent); }
+
 /* --- How we work (studio process) --- */
 /* lead-in + firmer scrim so the heading arrives AFTER browsing ends — over the glowing room, never a void */
 .work { position: relative; background: linear-gradient(180deg, transparent 0%, rgba(6,8,12,0.66) 14%, rgba(7,7,11,0.9) 30%); padding: 24svh clamp(1.2rem, 6vw, 6rem) 12svh; }

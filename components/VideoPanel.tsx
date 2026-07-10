@@ -111,7 +111,7 @@ export default function VideoPanel({
     ignite.current = Math.max(0, ignite.current - dt * 2.4);
     if (grp.current) {
       // hero hierarchy — the featured film SEIZES the frame; neighbours defer (breaks the "xeroxed tiles" look)
-      const s = focused ? 1.15 : active ? 1.13 : hov.current ? 1.0 : 0.9;
+      const s = focused ? 1.15 : active ? 1.16 : hov.current ? 1.0 : 0.89;
       grp.current.scale.setScalar(damp(grp.current.scale.x, s, 7, dt));
       // the reel ASSEMBLES as the curtain lifts — each film rises into place, staggered around the drum
       const birth = reduce ? 1 : clamp((scroll.progress - 0.018 - index * 0.006) / 0.05, 0, 1);
@@ -127,7 +127,7 @@ export default function VideoPanel({
     if (posterMat.current) {
       // dim non-featured films via self-glow; the changeover flash rides on top and decays
       const flash = ignite.current * ignite.current * 0.85;
-      posterMat.current.emissiveIntensity = damp(posterMat.current.emissiveIntensity, (lit ? 0.85 : 0.32) + flash, 6, dt);
+      posterMat.current.emissiveIntensity = damp(posterMat.current.emissiveIntensity, (lit ? 0.95 : 0.27) + flash, 6, dt);
     }
     if (shadowMat.current) {
       // the featured film presses a deeper contact shadow into the floor; neighbours sit lighter

@@ -221,13 +221,13 @@ export default function SoundStage({ tier }: { tier: string }) {
         </group>
       ))}
 
-      {/* living volumetric shafts under each overhead lamp (denser rig on high) */}
+      {/* living volumetric shafts (additive overdraw is the iGPU tax: 3 on standard, full rig on high) */}
       {tier !== "safe" && (
         <>
-          <Shaft lamp={[-4.2, 3.2, shaftZ]} base={1.5} height={4.7} tint={warm} opacity={0.42} phase={0.0} />
           <Shaft lamp={[-1.4, 3.25, shaftZ]} base={1.7} height={4.9} tint={warm} opacity={0.5} phase={1.1} />
           <Shaft lamp={[1.4, 3.25, shaftZ]} base={1.7} height={4.9} tint={warm} opacity={0.5} phase={2.2} />
           <Shaft lamp={[4.2, 3.2, shaftZ]} base={1.5} height={4.7} tint={warm} opacity={0.42} phase={3.3} />
+          {hi && <Shaft lamp={[-4.2, 3.2, shaftZ]} base={1.5} height={4.7} tint={warm} opacity={0.42} phase={0.0} />}
           {hi && <Shaft lamp={[-3.4, 1.6, -RADIUS * 0.5 + 0.4]} base={1.3} height={4.0} tint={cool} opacity={0.34} phase={4.4} />}
           {hi && <Shaft lamp={[3.4, 1.6, -RADIUS * 0.5 + 0.4]} base={1.3} height={4.0} tint={cool} opacity={0.34} phase={5.5} />}
         </>

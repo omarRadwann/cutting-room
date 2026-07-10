@@ -233,7 +233,7 @@ function Floor({ tier }: { tier: string }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y, RADIUS * 0.1]} receiveShadow>
       <planeGeometry args={[120, 120]} />
-      <MeshReflectorMaterial blur={hi ? [320, 120] : [360, 130]} resolution={hi ? 1024 : 144} mixBlur={1} mixStrength={hi ? 1.4 : 0.9} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
+      <MeshReflectorMaterial blur={hi ? [320, 120] : [380, 140]} resolution={hi ? 1024 : 128} mixBlur={1} mixStrength={hi ? 1.4 : 0.88} roughness={hi ? 0.78 : 0.9} roughnessMap={rough ?? undefined} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
     </mesh>
   );
 }
@@ -341,7 +341,7 @@ export default function Room() {
       <DoorGlow />
       <StageSign />
       <StageLight radial={radial} />
-      {q.tier !== "safe" && <Dust count={q.tier === "high" ? 700 : 340} radial={radial} />}
+      {q.tier !== "safe" && <Dust count={q.tier === "high" ? 700 : 220} radial={radial} />}
     </group>
   );
 }

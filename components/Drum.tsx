@@ -61,6 +61,8 @@ export default function Drum() {
     }
     spin.current = target;
     g.rotation.y = damp(g.rotation.y, target, 5, dt);
+    // the reel BANKS into the spin — a physical machine, not a slideshow (tiny, damped, 3D feel)
+    g.rotation.z = damp(g.rotation.z, clamp(-scroll.velocity * 0.005, -0.018, 0.018), 3, dt);
     const front = nearestFront(g.rotation.y);
     setFront(front);
     // publish the featured film's live world angle so the Room's spotlight follows it, even off-centre

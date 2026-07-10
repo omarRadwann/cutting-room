@@ -1,5 +1,6 @@
 "use client";
 import { Kinetic } from "@/components/Kinetic";
+import Marquee from "@/components/Marquee";
 import { STILLS } from "@/lib/content";
 import { withBase } from "@/lib/withBase";
 
@@ -27,6 +28,8 @@ const CORRIDOR_ORDER = [7, 0, 1, 5, 2, 4, 3, 6];
 export default function WorkProcess() {
   return (
     <section className="work" id="process">
+      {/* the kinetic band announces the section over the dimmed stage — speed & skew ride your scroll */}
+      <Marquee />
       <div className="work-head">
         <div className="work-head-l">
           <div className="eyebrow" data-reveal>How we work — كيف نعمل</div>

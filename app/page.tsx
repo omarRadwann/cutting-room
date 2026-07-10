@@ -91,7 +91,7 @@ export default function Page() {
           <p className="colo-lead">
             A cinematic advertising studio — directed, modelled, lit and graded in-house.
             Blender,&nbsp;Cinema&nbsp;4D and Houdini for the build; After&nbsp;Effects and DaVinci for the
-            finish. Ten films here; the full reel on request.
+            finish. Eleven films here; the full reel on request.
           </p>
 
           <div className="strip" data-reveal style={{ transitionDelay: ".08s" }}>
@@ -107,7 +107,7 @@ export default function Page() {
               Based in Cairo, working worldwide.
             </p>
             <a className="colo-cta" href="mailto:omarmoha1999@gmail.com" data-clickable data-magnetic data-cursor>
-              Start a project&nbsp;→
+              Start a project<span className="cta-orb" aria-hidden="true">→</span>
             </a>
           </div>
 
