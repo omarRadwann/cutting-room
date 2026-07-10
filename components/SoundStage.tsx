@@ -102,7 +102,7 @@ function DollyTrack() {
     <group>
       {[RADIUS - 0.3, RADIUS + 0.3].map((r) => (
         <mesh key={r} rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y + 0.032, 0]} raycast={noRaycast}>
-          <torusGeometry args={[r, 0.028, 10, 128]} />
+          <torusGeometry args={[r, 0.028, 8, 80]} />
           <meshStandardMaterial color="#2a2d36" metalness={0.95} roughness={0.32} envMapIntensity={1.5} />
         </mesh>
       ))}

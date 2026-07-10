@@ -59,7 +59,6 @@ export default function VideoPanel({
 }) {
   const grp = useRef<THREE.Group>(null);
   const posterMat = useRef<THREE.MeshStandardMaterial>(null);
-  const rim = useRef<THREE.MeshBasicMaterial>(null);
   const shadowMat = useRef<THREE.MeshBasicMaterial>(null);
   const hov = useRef(false);
   const poster = useTexture(withBase(clip.poster));
@@ -78,12 +77,6 @@ export default function VideoPanel({
       // dim non-featured films by dropping the screen's self-glow, not by greying the albedo
       posterMat.current.emissiveIntensity = damp(posterMat.current.emissiveIntensity, lit ? 0.85 : 0.32, 6, dt);
     }
-    if (rim.current) {
-      // a grade-tinted rim glows on the active/hovered film
-      _c.set(clip.grade);
-      rim.current.color.lerp(_c, 1 - Math.exp(-4 * dt));
-      rim.current.opacity = damp(rim.current.opacity, active ? 0.5 : hov.current ? 0.35 : 0, 6, dt);
-    }
     if (shadowMat.current) {
       // the featured film presses a deeper contact shadow into the floor; neighbours sit lighter
       shadowMat.current.opacity = damp(shadowMat.current.opacity, lit ? 0.52 : 0.3, 6, dt);
@@ -99,11 +92,6 @@ export default function VideoPanel({
           <meshBasicMaterial ref={shadowMat} map={shadow} transparent opacity={0.3} depthWrite={false} toneMapped={false} />
         </mesh>
       )}
-      {/* soft grade rim behind the frame (separation glow) */}
-      <mesh position={[0, 0, -0.1]}>
-        <planeGeometry args={[w + 0.34, h + 0.34]} />
-        <meshBasicMaterial ref={rim} transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
-      </mesh>
       {/* framed screen — a real beveled box with depth, catching the key + rim light (dimensional, not flat) */}
       <mesh position={[0, 0, -0.085]} castShadow>
         <boxGeometry args={[w + 0.17, h + 0.17, 0.15]} />

@@ -218,8 +218,9 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
   background: linear-gradient(90deg, var(--accent), rgba(216,162,74,0.4));
   transform: scaleX(var(--prog, 0)); transform-origin: left; will-change: transform; }
 
-/* living film grain over EVERYTHING (DOM + canvas) — the texture that kills digital flatness */
-.grain { position: fixed; inset: -60%; z-index: 3; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay;
+/* living film grain — NO blend mode (an overlay blend over WebGL forces the compositor to re-blend the
+   whole canvas every frame = real iGPU jank); a plain low-opacity composited layer reads the same */
+.grain { position: fixed; inset: -25%; z-index: 3; pointer-events: none; opacity: 0.042; will-change: transform;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.62'/%3E%3C/svg%3E");
   animation: grain-jitter 0.85s steps(4) infinite; }
 @keyframes grain-jitter { 0%{transform:translate(0,0)} 25%{transform:translate(-1.1%,0.8%)} 50%{transform:translate(0.9%,-1.2%)} 75%{transform:translate(-0.6%,-0.5%)} 100%{transform:translate(0,0)} }
@@ -348,8 +349,8 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .foot { display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: 0.74rem; letter-spacing: 0.04em; border-top: 1px solid var(--line); padding-top: 1.2rem; }
 
 /* --- How we work (studio process) --- */
-/* tall lead-in + firmer scrim so the heading arrives AFTER browsing ends, over a receding room — never over an active film */
-.work { position: relative; background: linear-gradient(180deg, transparent 0%, rgba(6,8,12,0.72) 12%, var(--base) 26%); padding: 34svh clamp(1.2rem, 6vw, 6rem) 12svh; }
+/* lead-in + firmer scrim so the heading arrives AFTER browsing ends — over the glowing room, never a void */
+.work { position: relative; background: linear-gradient(180deg, transparent 0%, rgba(6,8,12,0.66) 14%, rgba(7,7,11,0.9) 30%); padding: 24svh clamp(1.2rem, 6vw, 6rem) 12svh; }
 .work-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
   gap: clamp(1.4rem, 3vw, 2.6rem); margin-bottom: clamp(3rem, 7vw, 6rem); }
 .work-head-l { max-width: 24ch; }
@@ -393,18 +394,45 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
   font-family: var(--font-mono); font-size: var(--t-2xs); letter-spacing: 0.07em; color: var(--muted);
   transition: color .3s, border-color .3s; }
 .tl-card:hover .chip { color: var(--text); border-color: rgba(242,237,227,0.28); }
+/* the gallery corridor — a printed film frame hangs opposite each card, filling the dead half with the work */
+.tl-still { display: none; position: relative; width: clamp(190px, 21vw, 280px); margin: 0; align-self: center;
+  padding: 0.55rem 1.05rem; background: #0c0e14; border: 1px solid var(--line); border-radius: 2px;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.5); transition: transform .5s var(--ease-out), box-shadow .5s; }
+.tl-still::before, .tl-still::after { /* sprocket holes — it's a frame off the reel */
+  content: ""; position: absolute; top: 0.6rem; bottom: 0.6rem; width: 0.42rem;
+  background-image: radial-gradient(circle at 50% 50%, rgba(242,237,227,0.28) 1.6px, transparent 2.1px);
+  background-size: 0.42rem 0.85rem; background-repeat: repeat-y; }
+.tl-still::before { left: 0.28rem; }
+.tl-still::after { right: 0.28rem; }
+.tl-still img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 1px;
+  filter: saturate(0.72) contrast(1.0) brightness(1.04); transition: filter .5s var(--ease-out); }
+.tl-still figcaption { margin-top: 0.5rem; font-size: var(--t-2xs); letter-spacing: 0.16em; color: var(--muted); text-align: center; }
+.tl-still:hover { transform: rotate(0deg) translateY(-4px) !important; box-shadow: 0 26px 60px rgba(0,0,0,0.62); }
+.tl-still:hover img { filter: saturate(1) brightness(1.08); }
+
 .tl-end { padding-bottom: 0; align-items: start; }
 .tl-final { color: var(--accent); font-size: var(--t-xs); letter-spacing: 0.18em; text-transform: uppercase;
   border: 1px solid rgba(216,162,74,0.35); border-radius: 100px; padding: 0.55rem 1.1rem; width: fit-content;
   background: rgba(216,162,74,0.06); }
 
-/* desktop: centre spine, cards alternating left / right of it */
+/* desktop: centre spine, cards alternating left / right — and the WORK hanging on the opposite wall */
 @media (min-width: 900px) {
   .tl-step { grid-template-columns: 1fr clamp(3rem, 6vw, 4.5rem) 1fr; column-gap: 0; }
   .tl-rail { grid-column: 2; }
   .tl-card { grid-column: 3; grid-row: 1; max-width: 34rem; }
   .tl-step:nth-child(even) .tl-card { grid-column: 1; grid-row: 1; justify-self: end; }
+  .tl-still { display: block; grid-row: 1; }
+  .tl-step:nth-child(odd) .tl-still { grid-column: 1; justify-self: end; margin-right: clamp(1rem, 4vw, 3.5rem); transform: rotate(-2.2deg); }
+  .tl-step:nth-child(even) .tl-still { grid-column: 3; justify-self: start; margin-left: clamp(1rem, 4vw, 3.5rem); transform: rotate(2.2deg); }
   .tl-final { grid-column: 3; grid-row: 1; }
+
+  /* on-scroll choreography: cards slide in from their side, stills develop with a film-wipe */
+  .tl-step .tl-card { opacity: 0; transform: translateX(30px); transition: opacity .8s var(--ease-out), transform .8s var(--ease-out), border-color .35s, background-color .35s; }
+  .tl-step:nth-child(even) .tl-card { transform: translateX(-30px); }
+  .tl-step.in .tl-card { opacity: 1; transform: translateX(0); }
+  .tl-step .tl-still { opacity: 0; clip-path: inset(0 100% 0 0); transition: opacity .9s var(--ease-out) .18s, clip-path .9s var(--ease-out) .18s, transform .5s var(--ease-out), box-shadow .5s; }
+  .tl-step:nth-child(even) .tl-still { clip-path: inset(0 0 0 100%); }
+  .tl-step.in .tl-still { opacity: 1; clip-path: inset(0 0 0 0); }
 }
 
 /* --- phase-driven chrome visibility (UIState sets html[data-phase]) --- */

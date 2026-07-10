@@ -97,7 +97,7 @@ function Floor({ tier }: { tier: string }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y, RADIUS * 0.1]} receiveShadow>
       <planeGeometry args={[120, 120]} />
-      <MeshReflectorMaterial blur={hi ? [320, 120] : [320, 110]} resolution={hi ? 1024 : 256} mixBlur={1} mixStrength={hi ? 1.4 : 1.0} roughness={hi ? 0.75 : 0.86} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
+      <MeshReflectorMaterial blur={hi ? [320, 120] : [320, 110]} resolution={hi ? 1024 : 192} mixBlur={1} mixStrength={hi ? 1.4 : 0.95} roughness={hi ? 0.75 : 0.88} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.2} color="#06070a" metalness={hi ? 0.72 : 0.58} />
     </mesh>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 import { Kinetic } from "@/components/Kinetic";
+import { STILLS } from "@/lib/content";
+import { withBase } from "@/lib/withBase";
 
 // The pipeline as a TIMELINE — eight cuts on a fifteen-second master. Real studio phases, real tools.
 const STEPS = [
@@ -30,23 +32,34 @@ export default function WorkProcess() {
       </div>
 
       <ol className="tl">
-        {STEPS.map((s, i) => (
-          <li className="tl-step" key={s.n} data-reveal style={{ transitionDelay: `${(i % 2) * 0.06}s` }}>
-            <div className="tl-rail" aria-hidden="true"><span className="tl-dot" /></div>
-            <article className="tl-card">
-              <span className="tl-ghost" aria-hidden="true">{s.n}</span>
-              <div className="tl-meta mono2">
-                <span className="tl-tc">TC {s.tc}</span>
-                <span className="tl-phase">{s.phase}</span>
-              </div>
-              <h3 className="tl-title">{s.t}</h3>
-              <p className="tl-d">{s.d}</p>
-              <div className="tl-chips">
-                {s.tools.map((t) => <span className="chip" key={t}>{t}</span>)}
-              </div>
-            </article>
-          </li>
-        ))}
+        {STEPS.map((s, i) => {
+          const still = STILLS[i]; // 8 stills, 8 steps — every stage hangs a frame from the actual work
+          return (
+            <li className="tl-step" key={s.n} data-reveal style={{ transitionDelay: `${(i % 2) * 0.06}s` }}>
+              <div className="tl-rail" aria-hidden="true"><span className="tl-dot" /></div>
+              <article className="tl-card">
+                <span className="tl-ghost" aria-hidden="true">{s.n}</span>
+                <div className="tl-meta mono2">
+                  <span className="tl-tc">TC {s.tc}</span>
+                  <span className="tl-phase">{s.phase}</span>
+                </div>
+                <h3 className="tl-title">{s.t}</h3>
+                <p className="tl-d">{s.d}</p>
+                <div className="tl-chips">
+                  {s.tools.map((t) => <span className="chip" key={t}>{t}</span>)}
+                </div>
+              </article>
+              {still && (
+                // the gallery corridor: a printed frame from the reel hangs opposite each card
+                <figure className="tl-still">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={withBase(still.thumb)} alt={`${still.title} — ${still.campaign}`} loading="lazy" decoding="async" />
+                  <figcaption className="mono2">STILL · {still.title.toUpperCase()}</figcaption>
+                </figure>
+              )}
+            </li>
+          );
+        })}
         {/* the timeline resolves — the master ships (a lit destination, never a dead end) */}
         <li className="tl-step tl-end" data-reveal>
           <div className="tl-rail" aria-hidden="true"><span className="tl-dot tl-dot-end" /></div>
