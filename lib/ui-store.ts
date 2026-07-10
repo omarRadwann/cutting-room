@@ -10,9 +10,10 @@ export type UIState = {
   muted: boolean;       // global audio mute
   entered: boolean;     // preloader dismissed / experience entered
   intro: boolean;       // hero video is covering the screen (don't also decode a drum video behind it)
+  heroReady: boolean;   // hero <video> buffered enough to play through (preloader waits for this)
 };
 
-let state: UIState = { focus: null, front: 0, muted: true, entered: false, intro: true };
+let state: UIState = { focus: null, front: 0, muted: true, entered: false, intro: true, heroReady: false };
 const subs = new Set<() => void>();
 const emit = () => subs.forEach((f) => f());
 
@@ -22,6 +23,7 @@ export function setFront(i: number) { if (state.front !== i) { state = { ...stat
 export function toggleMuted() { state = { ...state, muted: !state.muted }; emit(); }
 export function setEntered(b: boolean) { if (state.entered !== b) { state = { ...state, entered: b }; emit(); } }
 export function setIntro(b: boolean) { if (state.intro !== b) { state = { ...state, intro: b }; emit(); } }
+export function setHeroReady(b: boolean) { if (state.heroReady !== b) { state = { ...state, heroReady: b }; emit(); } }
 
 function subscribe(f: () => void) { subs.add(f); return () => { subs.delete(f); }; }
 export function useUI(): UIState { return useSyncExternalStore(subscribe, () => state, () => state); }

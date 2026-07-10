@@ -147,6 +147,10 @@ html[data-cursor="view"] .cur-dot { opacity: 0; }
 @keyframes fade-up { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 .reveal { opacity: 0; animation: fade-up 1s var(--ease-out) forwards; }
 
+/* the hero title's rise stays PAUSED until the preloader lifts (Preloader sets html[data-entered]) —
+   the reveal always plays in front of the visitor, never behind the curtain */
+html:not([data-entered="1"]) .hero-title .kin-piece { animation-play-state: paused; }
+
 /* kinetic headline — masked pieces rise on reveal. Driven by components/Kinetic.tsx (.kin-go trigger). */
 .kin-mask {
   display: inline-block; overflow: hidden;
@@ -203,6 +207,24 @@ html[data-cursor="view"] .cur-dot { opacity: 0; }
 .hero-video video { width: 100%; height: 100%; object-fit: cover; display: block; }
 html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, html[data-phase="focus"] .hero-video { opacity: 0; }
 
+/* cinematic letterbox curtains — frame the hero film at scope ratio, then OPEN as you enter the reel */
+.cine-bar { position: fixed; left: 0; right: 0; height: 6.5svh; background: #030305; z-index: 2; pointer-events: none;
+  transform: scaleY(var(--hero-op, 1)); will-change: transform; }
+.cine-bar.top { top: 0; transform-origin: top; box-shadow: 0 1px 0 rgba(216,162,74,0.16); }
+.cine-bar.bot { bottom: 0; transform-origin: bottom; box-shadow: 0 -1px 0 rgba(216,162,74,0.16); }
+
+/* scroll progress hairline — a gold thread across the top of the room */
+.prog-hair { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 8; pointer-events: none;
+  background: linear-gradient(90deg, var(--accent), rgba(216,162,74,0.4));
+  transform: scaleX(var(--prog, 0)); transform-origin: left; will-change: transform; }
+
+/* living film grain over EVERYTHING (DOM + canvas) — the texture that kills digital flatness */
+.grain { position: fixed; inset: -60%; z-index: 3; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.62'/%3E%3C/svg%3E");
+  animation: grain-jitter 0.85s steps(4) infinite; }
+@keyframes grain-jitter { 0%{transform:translate(0,0)} 25%{transform:translate(-1.1%,0.8%)} 50%{transform:translate(0.9%,-1.2%)} 75%{transform:translate(-0.6%,-0.5%)} 100%{transform:translate(0,0)} }
+@media (prefers-reduced-motion: reduce) { .grain { animation: none; } }
+
 /* NAV */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 6;
@@ -223,7 +245,7 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
   color: var(--text); padding: 0.46rem 0.85rem; border-radius: 100px; font-size: var(--t-2xs); letter-spacing: 0.16em;
   text-transform: uppercase; transition: border-color 0.3s, color 0.3s, background-color 0.3s; cursor: pointer;
 }
-.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(216,162,74,0.1); }
 
 /* HERO */
 .hero { min-height: 100svh; display: flex; align-items: center; padding: 0 clamp(1.2rem, 6vw, 6rem); }
@@ -293,6 +315,12 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .focus-cap { position: absolute; left: clamp(1.2rem, 5vw, 4rem); bottom: clamp(1.6rem, 5vw, 3.4rem); right: clamp(1.2rem, 5vw, 4rem); max-width: 44ch;
   transform: translateY(18px); transition: transform 0.6s var(--ease-out); }
 .focus[data-open="1"] .focus-cap { transform: none; }
+/* the caption CASCADES in — eyebrow, title, brief, tools arrive as beats, not a block */
+.focus-cap > * { opacity: 0; transform: translateY(14px); transition: opacity .55s var(--ease-out), transform .55s var(--ease-out); }
+.focus[data-open="1"] .focus-cap > * { opacity: 1; transform: none; }
+.focus[data-open="1"] .focus-cap > *:nth-child(2) { transition-delay: .09s; }
+.focus[data-open="1"] .focus-cap > *:nth-child(3) { transition-delay: .18s; }
+.focus[data-open="1"] .focus-cap > *:nth-child(4) { transition-delay: .27s; }
 .focus-eyebrow { color: var(--accent); letter-spacing: var(--track-label); text-transform: uppercase; font-weight: 500; font-size: var(--t-xs); margin-bottom: 0.7rem; }
 .focus-title { font-family: var(--font-display); font-variation-settings: "opsz" 120; font-size: var(--t-2xl); line-height: 0.96; letter-spacing: var(--track-display); }
 .focus-brief { color: var(--text); opacity: 0.85; margin-top: 0.9rem; font-size: var(--t-md); line-height: 1.55; max-width: 40ch; }
@@ -311,8 +339,8 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .colo-statement em { font-style: italic; font-weight: 300; color: var(--accent); }
 .colo-row { display: flex; flex-wrap: wrap; gap: clamp(1.4rem, 4vw, 3rem); align-items: flex-end; justify-content: space-between; }
 .colo-lead { color: var(--muted); max-width: 40ch; line-height: 1.6; }
-.colo-cta { font-family: var(--font-display); font-style: italic; font-variation-settings: "opsz" 40; font-size: var(--t-xl); border-bottom: 1px solid var(--line); padding-bottom: 0.2rem; transition: border-color .4s, color .4s; }
-.colo-cta:hover { color: var(--accent); border-color: var(--accent); }
+.colo-cta { display: inline-block; font-family: var(--font-display); font-style: italic; font-variation-settings: "opsz" 40; font-size: var(--t-xl); border-bottom: 1px solid var(--line); padding-bottom: 0.2rem; transition: border-color .4s, color .4s, transform .45s var(--ease-out); }
+.colo-cta:hover { color: var(--accent); border-color: var(--accent); transform: translateX(6px); }
 .strip { display: flex; gap: 0.8rem; overflow-x: auto; padding-bottom: 0.6rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .strip::-webkit-scrollbar { display: none; }
 .strip img { height: clamp(120px, 20vw, 210px); width: auto; aspect-ratio: 9/16; object-fit: cover; border-radius: 3px; flex: 0 0 auto; filter: saturate(0.92) brightness(0.9); transition: filter .4s, transform .4s; }

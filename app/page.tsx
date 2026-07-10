@@ -46,7 +46,11 @@ export default function Page() {
       <AudioLayer />
       <GradeWash />
       <div className="hero-scrim" aria-hidden="true" />
+      <div className="cine-bar top" aria-hidden="true" />
+      <div className="cine-bar bot" aria-hidden="true" />
       <div className="filmic" aria-hidden="true" />
+      <div className="grain" aria-hidden="true" />
+      <div className="prog-hair" aria-hidden="true" />
 
       {/* chrome */}
       <SiteNav />
@@ -61,8 +65,8 @@ export default function Page() {
         <section className="hero">
           <div className="hero-inner">
             <div className="hero-eyebrow">Selected work — film · motion · 3D</div>
-            {/* delayed so the word-rise plays AS the preloader lifts, not hidden behind it */}
-            <Kinetic as="h1" className="hero-title" text="The Cutting Room" by="word" trigger="load" delay={0.85} />
+            {/* the rise is PAUSED by CSS until the preloader lifts (html[data-entered]) — plays in view, always */}
+            <Kinetic as="h1" className="hero-title" text="The Cutting Room" by="word" trigger="load" delay={0.15} />
             <div className="hero-ar" dir="rtl">غرفة المونتاج</div>
             <p className="hero-tag">
               Cinematic film for architecture, fashion and product. Turn the drum to browse the

@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text, useTexture, useVideoTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -24,14 +24,21 @@ function shadowTex(): THREE.CanvasTexture | null {
   _shadowTex = new THREE.CanvasTexture(c); return _shadowTex;
 }
 
-/** Video layer — mounted only while a panel is active, so ~1–2 videos decode at once. */
-function ActiveVideo({ src, unmuted, w, h }: { src: string; unmuted: boolean; w: number; h: number }) {
-  const tex = useVideoTexture(src, { muted: true, loop: true, start: true, crossOrigin: "anonymous", playsInline: true });
+/** Video layer — mounted while a panel is active. `playing=false` = PRE-BUFFER mode: the element loads
+ *  and uploads its first frame but stays PAUSED (no decode stream), so the hero beat pays nothing and the
+ *  first scroll into the reel starts the film instantly. */
+function ActiveVideo({ src, unmuted, playing, w, h }: { src: string; unmuted: boolean; playing: boolean; w: number; h: number }) {
+  const tex = useVideoTexture(src, { muted: true, loop: true, start: false, crossOrigin: "anonymous", playsInline: true, preload: "auto" });
   tex.colorSpace = THREE.SRGBColorSpace;
   const mat = useRef<THREE.MeshStandardMaterial>(null);
   const v = tex.image as HTMLVideoElement;
-  if (v) { v.muted = !unmuted; if (unmuted) v.play?.().catch(() => {}); }
-  useFrame((_, dt) => { if (mat.current) mat.current.opacity = damp(mat.current.opacity, 1, 7, dt); });
+  useEffect(() => {
+    if (!v) return;
+    v.muted = !unmuted;
+    if (playing) v.play?.().catch(() => {});
+    else v.pause?.();
+  }, [v, playing, unmuted]);
+  useFrame((_, dt) => { if (mat.current) mat.current.opacity = damp(mat.current.opacity, playing ? 1 : 0, 7, dt); });
   return (
     // a LIT screen: the video drives both albedo (so it catches the room's soft specular) AND emissive
     // (self-glow), kept toneMapped so it lives in the room's AgX response — not a flat unlit sticker
@@ -127,10 +134,11 @@ export default function VideoPanel({
         <planeGeometry args={[w, h]} />
         <meshStandardMaterial ref={posterMat} map={poster} emissiveMap={poster} emissive="#ffffff" emissiveIntensity={0.5} roughness={0.55} metalness={0} />
       </mesh>
-      {/* decode the film video ONLY when it's the front panel AND the hero isn't covering it (no double-decode) */}
-      {active && !intro && !postersOnly() && (
+      {/* front film mounts immediately but PLAYS only once the hero uncovers it — pre-buffered, zero
+          decode competition during the hero beat, instant start on the first scroll */}
+      {active && !postersOnly() && (
         <Suspense fallback={null}>
-          <ActiveVideo src={withBase(clip.src)} unmuted={unmuted} w={w} h={h} />
+          <ActiveVideo src={withBase(clip.src)} unmuted={unmuted} playing={!intro} w={w} h={h} />
         </Suspense>
       )}
       {/* fresnel glass cover — reflects the softbox rig so each film reads as a framed piece behind glass;

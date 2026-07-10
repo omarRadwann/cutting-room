@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { withBase } from "@/lib/withBase";
+import { setHeroReady } from "@/lib/ui-store";
 
 /**
  * Bespoke hero film — a full-screen video that owns the first screen and FADES to reveal the drum as you
@@ -39,8 +40,9 @@ export default function HeroVideo() {
         playsInline
         autoPlay
         preload="auto"
-        onError={() => setOk(false)}
+        onError={() => { setOk(false); setHeroReady(true); /* missing/undecodable video must never hold the loader */ }}
         onCanPlay={() => vref.current?.play().catch(() => {})}
+        onCanPlayThrough={() => setHeroReady(true)}
       />
     </div>
   );

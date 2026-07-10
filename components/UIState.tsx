@@ -21,6 +21,7 @@ export default function UIState() {
       // scene recedes as the "how we work" section + colophon arrive, so the DOM reads clean
       const sceneOp = focused ? 1 : clamp(1 - (p - 0.58) / 0.09, 0.28, 1);
       root.style.setProperty("--scene-op", sceneOp.toFixed(3));
+      root.style.setProperty("--prog", p.toFixed(4)); // the gold scroll hairline
       const phase = focused ? "focus" : p < 0.05 ? "intro" : p > 0.58 ? "outro" : "browse";
       if (root.dataset.phase !== phase) { root.dataset.phase = phase; setIntro(phase === "intro"); }
       raf = requestAnimationFrame(loop);
