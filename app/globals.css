@@ -336,8 +336,11 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .focus-scrim { position: absolute; inset: 0; background:
   linear-gradient(0deg, rgba(4,4,7,0.88) 0%, rgba(4,4,7,0.32) 27%, transparent 48%, transparent 74%, rgba(4,4,7,0.46) 100%),
   linear-gradient(74deg, rgba(4,4,7,0.72) 0%, rgba(4,4,7,0.22) 33%, transparent 58%); }
-.focus-cap { position: absolute; left: clamp(1.2rem, 5vw, 4rem); bottom: clamp(1.6rem, 5vw, 3.4rem); right: clamp(1.2rem, 5vw, 4rem); max-width: 44ch;
+.focus-cap { position: absolute; left: clamp(1.2rem, 5vw, 4rem); bottom: clamp(1.6rem, 5vw, 3.4rem); right: clamp(1.2rem, 5vw, 4rem);
+  max-width: min(38ch, 30vw); /* stays clear of the centred film — the title never runs onto the frame */
   transform: translateY(18px); transition: transform 0.6s var(--ease-out); }
+@media (max-width: 900px) { .focus-cap { max-width: 44ch; } }
+.focus-count { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.3em; color: var(--muted); margin-bottom: 0.55rem; }
 .focus[data-open="1"] .focus-cap { transform: none; }
 /* the caption CASCADES in — eyebrow, title, brief, tools, timecode arrive as beats. Animation (not
    transition) so the re-keyed caption REPLAYS when you switch films inside focus. */
@@ -347,6 +350,7 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .focus[data-open="1"] .focus-cap > *:nth-child(3) { animation-delay: .18s; }
 .focus[data-open="1"] .focus-cap > *:nth-child(4) { animation-delay: .27s; }
 .focus[data-open="1"] .focus-cap > *:nth-child(5) { animation-delay: .36s; }
+.focus[data-open="1"] .focus-cap > *:nth-child(6) { animation-delay: .45s; }
 @keyframes cap-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 /* the projection-booth blink between films (re-keyed → replays) */
@@ -368,6 +372,11 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .focus-arrows button:hover { border-color: var(--accent); background: rgba(16,16,24,0.7); }
 .focus-arrows button:active { transform: scale(0.96); }
 .focus-cap .focus-close, .focus-cap { pointer-events: auto; }
+
+/* the FLOW seal — the Blender wordmark (letters band, alpha-faded edges), screen-blended so only
+   the gold lives on the page — no plate, no rectangle, on any background */
+.foot-seal { display: block; margin: clamp(2.2rem, 5vw, 3.4rem) auto 0; width: clamp(180px, 20vw, 250px);
+  mix-blend-mode: screen; opacity: 0.95; pointer-events: none; }
 
 /* COLOPHON */
 /* 104svh (not 118) so at full scroll the statement sits clear of the fixed nav — nothing clips at the end */

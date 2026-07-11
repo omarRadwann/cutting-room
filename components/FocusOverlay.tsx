@@ -59,6 +59,7 @@ export default function FocusOverlay() {
         <>
           <button className="icon-btn focus-close" onClick={() => setFocus(null)} data-clickable>✕ Close</button>
           <div className="focus-cap" key={ui.focus}>
+            <div className="focus-count">{String((ui.focus as number) + 1).padStart(2, "0")} / {N}</div>
             <div className="focus-eyebrow">{clip.campaign} — {clip.chapter}</div>
             <div className="focus-title">{clip.title}</div>
             <p className="focus-brief">{clip.brief}</p>

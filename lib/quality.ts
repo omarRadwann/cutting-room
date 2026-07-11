@@ -27,7 +27,7 @@ export type Quality = {
 
 const PRESETS: Record<Tier, Quality> = {
   high:     { tier: "high",     dprMax: 2.0,  dprMin: 1.0, ao: true,  dof: true,  bloom: true,  ca: true,  grain: true,  bloomIntensity: 0.4, particleScale: 1.0,  envSize: 256 },
-  standard: { tier: "standard", dprMax: 1.05, dprMin: 1.0, ao: false, dof: false, bloom: true,  ca: false, grain: false, bloomIntensity: 0.3, particleScale: 0.6,  envSize: 128 },
+  standard: { tier: "standard", dprMax: 1.0,  dprMin: 1.0, ao: false, dof: false, bloom: true,  ca: false, grain: false, bloomIntensity: 0.3, particleScale: 0.6,  envSize: 128 },
   safe:     { tier: "safe",     dprMax: 1.25, dprMin: 1.0, ao: false, dof: false, bloom: false, ca: false, grain: false, bloomIntensity: 0.0, particleScale: 0.35, envSize: 64  },
 };
 

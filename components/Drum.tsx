@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { CLIPS } from "@/lib/content";
@@ -8,6 +8,7 @@ import { scroll } from "@/lib/scroll-store";
 import { drumState } from "@/lib/drum-state";
 import { getForce } from "@/lib/force";
 import { getUI, setFront, setFocus, useUI } from "@/lib/ui-store";
+import { prefersReducedMotion } from "@/lib/reduced-motion";
 import VideoPanel from "@/components/VideoPanel";
 
 const damp = THREE.MathUtils.damp;
@@ -28,6 +29,8 @@ function nearestFront(rot: number) {
 export default function Drum() {
   const group = useRef<THREE.Group>(null);
   const spin = useRef(0);
+  const breath = useRef(0); // idle-breath envelope (0 = still, 1 = full sway)
+  const reduce = useMemo(() => prefersReducedMotion(), []);
   const drag = useRef({ active: false, lastX: 0, offset: 0, vel: 0, moved: 0 });
   const ui = useUI();
 
@@ -59,8 +62,17 @@ export default function Drum() {
       if (!drag.current.active) { drag.current.offset += drag.current.vel; drag.current.vel *= 0.9; }
       target = unwrapNear(-baseAngle, g.rotation.y) + drag.current.offset;
     }
+    // living reel: at rest in browse, an imperceptible breath (±0.2°) sways AROUND the rest point —
+    // the room's lamps breathe, the shafts flow, and now the machine does too. Never re-centres
+    // (free-rest law) and vanishes the moment you scroll, drag or focus.
+    if (!reduce && focus === null && Math.abs(scroll.velocity) < 0.01 && !drag.current.active) {
+      breath.current = damp(breath.current, 1, 1.5, dt);
+    } else {
+      breath.current = damp(breath.current, 0, 6, dt);
+    }
+    const sway = breath.current * 0.0035 * Math.sin(performance.now() * 0.0007);
     spin.current = target;
-    g.rotation.y = damp(g.rotation.y, target, 5, dt);
+    g.rotation.y = damp(g.rotation.y, target + sway, 5, dt);
     // the reel BANKS into the spin — a physical machine, not a slideshow (tiny, damped, 3D feel)
     g.rotation.z = damp(g.rotation.z, clamp(-scroll.velocity * 0.005, -0.018, 0.018), 3, dt);
     const front = nearestFront(g.rotation.y);

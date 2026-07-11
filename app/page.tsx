@@ -15,6 +15,7 @@ import FilmIndex from "@/components/FilmIndex";
 import MobileStepper from "@/components/MobileStepper";
 import UIState from "@/components/UIState";
 import AudioLayer from "@/components/AudioLayer";
+import ReelPrefetch from "@/components/ReelPrefetch";
 import WorkProcess from "@/components/WorkProcess";
 import { STILLS } from "@/lib/content";
 import { withBase } from "@/lib/withBase";
@@ -45,6 +46,7 @@ export default function Page() {
       {/* atmosphere + phase driver */}
       <UIState />
       <AudioLayer />
+      <ReelPrefetch />{/* idle-warms the whole reel post-entry — films start instantly */}
       <GradeWash />
       <div className="hero-scrim" aria-hidden="true" />
       <div className="cine-bar top" aria-hidden="true" />
@@ -113,6 +115,9 @@ export default function Page() {
             </a>
           </div>
 
+          {/* the Blender-rendered FLOW seal signs the page off (screen-blended — melts into the dark) */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="foot-seal" src={withBase("/media/flow-seal.webp")} alt="" aria-hidden="true" loading="lazy" decoding="async" />
           <div className="foot">
             <span>Cairo — القاهرة</span>
             <span className="mono2">FLOW · THE CUTTING ROOM · MMXXVI</span>
