@@ -8,7 +8,7 @@ import DebugOverlay from "@/components/DebugOverlay";
 import { ExperienceBoundary } from "@/components/ExperienceBoundary";
 import { Kinetic } from "@/components/Kinetic";
 import SiteNav from "@/components/SiteNav";
-import Hud from "@/components/Hud";
+import FilmTitleCard from "@/components/FilmTitleCard";
 import GradeWash from "@/components/GradeWash";
 import FocusOverlay from "@/components/FocusOverlay";
 import FilmIndex from "@/components/FilmIndex";
@@ -57,7 +57,7 @@ export default function Page() {
 
       {/* chrome */}
       <SiteNav />
-      <Hud />
+      <FilmTitleCard />{/* replaces the corner HUD — films are announced, not labelled */}
       <FilmIndex />
       <MobileStepper />
       <FocusOverlay />
@@ -97,6 +97,13 @@ export default function Page() {
             Blender,&nbsp;Cinema&nbsp;4D and Houdini for the build; After&nbsp;Effects and DaVinci for the
             finish. Twelve films here; the full reel on request.
           </p>
+
+          {/* the departments — a full house, stated quietly */}
+          <div className="colo-services" data-reveal style={{ transitionDelay: ".04s" }}>
+            {["Direction", "CGI & 3D", "Edit & Grade", "Sound & Mix"].map((s, i) => (
+              <span key={s}><i>{String(i + 1).padStart(2, "0")}</i>{s}</span>
+            ))}
+          </div>
 
           <div className="strip" data-reveal style={{ transitionDelay: ".08s" }}>
             {STILLS.map((s) => (

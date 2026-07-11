@@ -243,6 +243,13 @@ html[data-phase="browse"] .hero-video, html[data-phase="outro"] .hero-video, htm
 .brand-sub { font-family: var(--font-body); color: var(--muted); font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
 .brand-sub [dir="rtl"] { font-family: var(--font-ar); font-size: 0.8rem; letter-spacing: 0.02em; text-transform: none; }
 .nav-right { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.8rem); }
+/* the standing commission CTA — every working studio carries one in the chrome */
+.nav-cta { font-size: var(--t-xs); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+  color: var(--base); background: var(--accent); border-radius: 999px; padding: 0.62em 1.15em;
+  text-decoration: none; white-space: nowrap; transition: background .25s, transform .2s var(--ease-out); }
+.nav-cta:hover { background: #e7b562; }
+.nav-cta:active { transform: scale(0.97); }
+@media (max-width: 900px) { .nav-cta { display: none; } } /* phones: the colophon CTA carries it */
 .nav-meta { text-align: right; line-height: 1.35; }
 .nav-meta .k { font-size: var(--t-2xs); letter-spacing: var(--track-micro); text-transform: uppercase; color: var(--muted); display: block; }
 .nav-meta .v { font-family: var(--font-display); font-style: italic; font-size: var(--t-sm); color: var(--text); }
@@ -372,6 +379,32 @@ html[data-phase="browse"] .hero-cue, html[data-phase="outro"] .hero-cue, html[da
 .focus-arrows button:hover { border-color: var(--accent); background: rgba(16,16,24,0.7); }
 .focus-arrows button:active { transform: scale(0.96); }
 .focus-cap .focus-close, .focus-cap { pointer-events: auto; }
+
+/* the departments row — four disciplines under one roof, stated in production-mono */
+.colo-services { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2.5vw, 2rem);
+  margin-top: clamp(1.8rem, 3.5vw, 2.6rem); }
+.colo-services span { display: block; font-family: var(--font-mono); text-transform: uppercase;
+  letter-spacing: 0.2em; font-size: 0.66rem; color: var(--text); opacity: 0.92;
+  border-top: 1px solid var(--line); padding-top: 0.95rem; }
+.colo-services span i { display: block; font-style: normal; color: var(--accent); font-size: 0.6rem;
+  letter-spacing: 0.3em; margin-bottom: 0.5rem; }
+@media (max-width: 700px) { .colo-services { grid-template-columns: repeat(2, 1fr); } }
+
+/* CINEMA TITLE CARD — each film announced in display type as it takes the front (browse only).
+   Sits at the lower third over the contact-shadow zone; the rise replays on every changeover. */
+.title-card { position: fixed; left: 0; right: 0; bottom: clamp(4.5svh, 6vh, 7svh); z-index: 5;
+  display: grid; place-items: center; text-align: center; pointer-events: none;
+  opacity: 0; transition: opacity .45s var(--ease-out); }
+html[data-phase="browse"] .title-card { opacity: 1; }
+.title-card-in { display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
+  animation: tcard-in .7s var(--ease-out) both; }
+@keyframes tcard-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.tc-index { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--accent); }
+.tc-name { font-family: var(--font-display); font-variation-settings: "opsz" 120; font-weight: 500;
+  font-size: clamp(2.1rem, 5.2vw, 4.9rem); line-height: 0.95; letter-spacing: -0.015em; color: var(--text);
+  text-shadow: 0 2px 40px rgba(4,4,7,0.8), 0 1px 12px rgba(4,4,7,0.55); }
+.tc-ar { font-family: var(--font-ar); color: var(--muted); font-size: clamp(0.9rem, 1.3vw, 1.1rem); opacity: 0.9; }
+@media (prefers-reduced-motion: reduce) { .title-card-in { animation: none; } }
 
 /* the FLOW seal — the Blender wordmark (letters band, alpha-faded edges), screen-blended so only
    the gold lives on the page — no plate, no rectangle, on any background */

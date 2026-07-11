@@ -21,6 +21,9 @@ export default function SiteNav() {
         <button className="icon-btn" onClick={toggleMuted} data-clickable data-magnetic data-cursor aria-label={ui.muted ? "Turn sound on" : "Turn sound off"}>
           {ui.muted ? "Sound ○" : "Sound ●"}
         </button>
+        <a className="nav-cta" href="mailto:omarmoha1999@gmail.com" data-clickable data-magnetic data-cursor>
+          Start a project <span aria-hidden="true">↗</span>
+        </a>
       </div>
     </nav>
   );

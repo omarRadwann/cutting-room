@@ -125,7 +125,8 @@ export default function VideoPanel({
     ignite.current = Math.max(0, ignite.current - dt * 2.4);
     if (grp.current) {
       // hero hierarchy — the featured film SEIZES the frame; neighbours defer (breaks the "xeroxed tiles" look)
-      const s = focused ? 1.15 : active ? 1.16 : hov.current ? 1.0 : 0.89;
+      const s = focused ? 1.15 : active ? 1.22 : hov.current ? 1.0 : 0.86; // harder contrast — confidence is scale
+
       grp.current.scale.setScalar(damp(grp.current.scale.x, s, 7, dt));
       // the reel ASSEMBLES as the curtain lifts — each film rises into place, staggered around the drum
       const birth = reduce ? 1 : clamp((scroll.progress - 0.018 - index * 0.006) / 0.05, 0, 1);

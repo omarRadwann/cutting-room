@@ -32,7 +32,7 @@ export default function CinematicRig() {
     let targetZ: number, targetY: number, lookY: number;
     if (ui.focus !== null) {
       const pn = PANELS[ui.focus];
-      targetZ = DRUM.radius + focusDistFor(pn.width, pn.height, FOCUS_FOV, aspect) * 1.05;
+      targetZ = DRUM.radius + focusDistFor(pn.width, pn.height, FOCUS_FOV, aspect) * 1.02; // tighter margin — the film COMMANDS the screening
       targetY = 0; lookY = 0;
     } else {
       const pn = PANELS[ui.front] ?? PANELS[0];
