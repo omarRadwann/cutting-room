@@ -1,10 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <!-- The Cutting Room favicon: an Academy film-leader countdown mark -->
+  <!-- FLOW favicon: the film-leader countdown mark, now carrying the brand initial -->
   <rect width="64" height="64" rx="14" fill="#07070b"/>
-  <line x1="32" y1="7" x2="32" y2="57" stroke="#f2ede3" stroke-opacity="0.22" stroke-width="1.6"/>
-  <line x1="7" y1="32" x2="57" y2="32" stroke="#f2ede3" stroke-opacity="0.22" stroke-width="1.6"/>
+  <line x1="32" y1="7" x2="32" y2="57" stroke="#f2ede3" stroke-opacity="0.18" stroke-width="1.6"/>
+  <line x1="7" y1="32" x2="57" y2="32" stroke="#f2ede3" stroke-opacity="0.18" stroke-width="1.6"/>
   <circle cx="32" cy="32" r="21" fill="none" stroke="#f2ede3" stroke-opacity="0.3" stroke-width="2"/>
   <!-- the sweep wedge, mid-count -->
-  <path d="M32 32 L32 11 A21 21 0 0 1 52.4 26.5 Z" fill="#d8a24a"/>
-  <circle cx="32" cy="32" r="5.4" fill="#d8a24a"/>
+  <path d="M32 32 L32 11 A21 21 0 0 1 52.4 26.5 Z" fill="#d8a24a" fill-opacity="0.92"/>
+  <!-- brand initial: a serif F cut from two bars + stem (no font dependency) -->
+  <g fill="#f2ede3">
+    <rect x="26.6" y="21.5" width="3.6" height="21" rx="0.8"/>
+    <rect x="26.6" y="21.5" width="12.4" height="3.4" rx="0.8"/>
+    <rect x="26.6" y="30.2" width="9.6" height="3.2" rx="0.8"/>
+  </g>
 </svg>
